@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -51,11 +52,11 @@ fun DormRow(
     val dorm = preview.dorm
     Card(onClick = onClick, modifier = modifier.fillMaxWidth()) {
         Column(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(start = 12.dp, top = 12.dp, end = 4.dp, bottom = 12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.Top,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Column(modifier = Modifier.weight(1f)) {
@@ -83,7 +84,10 @@ fun DormRow(
                         )
                     }
                 }
-                IconButton(onClick = onToggleViewed) {
+                IconButton(
+                    onClick = onToggleViewed,
+                    modifier = Modifier.offset(y = (-12).dp),
+                ) {
                     val viewed = dorm.status == DormStatus.VIEWED
                     Icon(
                         imageVector = if (viewed) Icons.Filled.CheckCircle else Icons.Outlined.CheckCircle,
