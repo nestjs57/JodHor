@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.pohnpawit.jodhor.core.navigation.Route
-import com.pohnpawit.jodhor.data.model.next
+import com.pohnpawit.jodhor.data.model.DormStatus
 import com.pohnpawit.jodhor.data.repository.DormRepository
 import com.pohnpawit.jodhor.data.storage.PhotoFileStore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,13 +28,21 @@ class DormDetailViewModel @Inject constructor(
     private val dormId: Long = savedStateHandle.toRoute<Route.DormDetail>().dormId
 
     private var pendingCameraFile: File? = null
+    private var pendingCoverFile: File? = null
 
     val uiState: StateFlow<DormDetailUiState> = combine(
         repository.observeDorm(dormId),
         repository.observePhotos(dormId),
         repository.observePhones(dormId),
-    ) { dorm, photos, phones ->
-        DormDetailUiState(isLoading = false, dorm = dorm, photos = photos, phones = phones)
+        repository.observeCovers(dormId),
+    ) { dorm, photos, phones, covers ->
+        DormDetailUiState(
+            isLoading = false,
+            dorm = dorm,
+            photos = photos,
+            phones = phones,
+            covers = covers,
+        )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -51,9 +59,9 @@ class DormDetailViewModel @Inject constructor(
         viewModelScope.launch { repository.setFull(current.id, !current.isFull) }
     }
 
-    fun cycleStatus() {
+    fun setStatus(status: DormStatus) {
         val current = uiState.value.dorm ?: return
-        viewModelScope.launch { repository.setStatus(current.id, current.status.next()) }
+        viewModelScope.launch { repository.setStatus(current.id, status) }
     }
 
     fun prepareCameraCapture(): Uri {
@@ -88,6 +96,40 @@ class DormDetailViewModel @Inject constructor(
 
     fun reorderPhotos(orderedIds: List<Long>) {
         viewModelScope.launch { repository.reorderPhotos(orderedIds) }
+    }
+
+    fun prepareCoverCapture(): Uri {
+        val file = photoFileStore.createCoverFile()
+        pendingCoverFile = file
+        return photoFileStore.uriFor(file)
+    }
+
+    fun onCoverCameraResult(success: Boolean) {
+        val file = pendingCoverFile ?: return
+        pendingCoverFile = null
+        if (success) {
+            viewModelScope.launch { repository.addCover(dormId, file.absolutePath) }
+        } else {
+            viewModelScope.launch { photoFileStore.delete(file.absolutePath) }
+        }
+    }
+
+    fun onCoverPickedFromGallery(uris: List<Uri>) {
+        if (uris.isEmpty()) return
+        viewModelScope.launch {
+            uris.forEach { uri ->
+                val path = photoFileStore.copyCoverFromUri(uri) ?: return@forEach
+                repository.addCover(dormId, path)
+            }
+        }
+    }
+
+    fun deleteCover(coverId: Long) {
+        viewModelScope.launch { repository.deleteCover(coverId) }
+    }
+
+    fun reorderCovers(orderedIds: List<Long>) {
+        viewModelScope.launch { repository.reorderCovers(orderedIds) }
     }
 
     fun deleteDorm(onDone: () -> Unit) {

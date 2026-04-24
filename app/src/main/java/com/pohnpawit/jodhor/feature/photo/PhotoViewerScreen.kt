@@ -20,8 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -76,10 +74,8 @@ fun PhotoViewerScreen(
     PhotoPager(
         photos = state.photos,
         initialPhotoId = state.initialPhotoId,
-        coverPhotoId = state.coverPhotoId,
         onBack = onBack,
         onDelete = viewModel::deletePhoto,
-        onSetCover = viewModel::setCoverPhoto,
     )
 }
 
@@ -88,12 +84,9 @@ fun PhotoViewerScreen(
 private fun PhotoPager(
     photos: List<Photo>,
     initialPhotoId: Long,
-    coverPhotoId: Long?,
     onBack: () -> Unit,
     onDelete: (Long) -> Unit,
-    onSetCover: (Long) -> Unit,
 ) {
-    val effectiveCoverId = coverPhotoId ?: photos.firstOrNull()?.id
     val initialPage = remember(photos, initialPhotoId) {
         photos.indexOfFirst { it.id == initialPhotoId }.coerceAtLeast(0)
     }
@@ -128,16 +121,6 @@ private fun PhotoPager(
                         }
                     },
                     actions = {
-                        val isCover = currentPhoto.id == effectiveCoverId
-                        IconButton(
-                            onClick = { onSetCover(currentPhoto.id) },
-                            enabled = !isCover,
-                        ) {
-                            Icon(
-                                imageVector = if (isCover) Icons.Filled.Star else Icons.Outlined.StarOutline,
-                                contentDescription = stringResource(R.string.action_set_as_cover),
-                            )
-                        }
                         IconButton(onClick = { showDeleteDialog = true }) {
                             Icon(
                                 Icons.Default.Delete,

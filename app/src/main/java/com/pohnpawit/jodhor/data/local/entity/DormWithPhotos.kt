@@ -8,19 +8,12 @@ data class DormWithPhotos(
     @Embedded val dorm: DormEntity,
     @Relation(parentColumn = "id", entityColumn = "dormId")
     val photos: List<PhotoEntity>,
+    @Relation(parentColumn = "id", entityColumn = "dormId")
+    val covers: List<CoverPhotoEntity>,
 )
 
-fun DormWithPhotos.toDomain(): DormPreview {
-    val sorted = photos.sortedBy { it.sortOrder }.map { it.toDomain() }
-    val coverId = dorm.coverPhotoId
-    val cover = if (coverId != null) {
-        sorted.firstOrNull { it.id == coverId } ?: sorted.firstOrNull()
-    } else {
-        sorted.firstOrNull()
-    }
-    return DormPreview(
-        dorm = dorm.toDomain(),
-        photos = sorted,
-        cover = cover,
-    )
-}
+fun DormWithPhotos.toDomain(): DormPreview = DormPreview(
+    dorm = dorm.toDomain(),
+    photos = photos.sortedBy { it.sortOrder }.map { it.toDomain() },
+    covers = covers.sortedBy { it.sortOrder }.map { it.toDomain() },
+)

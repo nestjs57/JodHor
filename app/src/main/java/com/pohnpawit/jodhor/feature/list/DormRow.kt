@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,7 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
@@ -35,9 +40,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.pohnpawit.jodhor.R
+import com.pohnpawit.jodhor.data.model.CoverPhoto
 import com.pohnpawit.jodhor.data.model.DormPreview
 import com.pohnpawit.jodhor.data.model.DormStatus
-import com.pohnpawit.jodhor.data.model.Photo
 import java.io.File
 
 @Composable
@@ -48,14 +53,19 @@ fun DormRow(
     modifier: Modifier = Modifier,
 ) {
     val dorm = preview.dorm
-    val cover = preview.cover
+    val covers = preview.covers
+    val viewed = dorm.status == DormStatus.VIEWED
     Column(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
     ) {
-        if (cover != null) {
-            CoverPhoto(photo = cover)
+        if (covers.isNotEmpty()) {
+            CoverSection(
+                covers = covers,
+                viewed = viewed,
+                onToggleViewed = onToggleViewed,
+            )
             Spacer(Modifier.height(12.dp))
         }
         Row(
@@ -89,38 +99,135 @@ fun DormRow(
                     )
                 }
             }
-            IconButton(
-                onClick = onToggleViewed,
-                modifier = Modifier.offset(y = (-8).dp),
-            ) {
-                val viewed = dorm.status == DormStatus.VIEWED
-                Icon(
-                    imageVector = if (viewed) Icons.Filled.CheckCircle else Icons.Outlined.CheckCircle,
-                    contentDescription = stringResource(R.string.action_toggle_viewed),
-                    tint = if (viewed) MaterialTheme.colorScheme.primary
-                           else MaterialTheme.colorScheme.outline,
-                )
+            if (covers.isEmpty()) {
+                IconButton(
+                    onClick = onToggleViewed,
+                    modifier = Modifier.offset(y = (-8).dp),
+                ) {
+                    Icon(
+                        imageVector = if (viewed) Icons.Filled.CheckCircle else Icons.Outlined.CheckCircle,
+                        contentDescription = stringResource(R.string.action_toggle_viewed),
+                        tint = if (viewed) MaterialTheme.colorScheme.primary
+                               else MaterialTheme.colorScheme.outline,
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun CoverPhoto(photo: Photo) {
+private fun CoverSection(
+    covers: List<CoverPhoto>,
+    viewed: Boolean,
+    onToggleViewed: () -> Unit,
+) {
+    val pagerState = rememberPagerState(pageCount = { covers.size })
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(4f / 3f)
             .clip(RoundedCornerShape(14.dp)),
     ) {
-        AsyncImage(
-            model = File(photo.filePath),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xFFEFEFEF)),
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize(),
+        ) { page ->
+            AsyncImage(
+                model = File(covers[page].filePath),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFFEFEFEF)),
+            )
+        }
+        if (viewed) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.18f)),
+            )
+            ViewedBadge()
+        }
+        if (covers.size > 1) {
+            DotsIndicator(
+                count = covers.size,
+                selected = pagerState.currentPage,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 10.dp),
+            )
+        }
+        ViewedOverlayButton(viewed = viewed, onClick = onToggleViewed)
+    }
+}
+
+@Composable
+private fun BoxScope.ViewedBadge() {
+    Box(
+        modifier = Modifier
+            .align(Alignment.TopStart)
+            .padding(10.dp)
+            .clip(RoundedCornerShape(6.dp))
+            .background(MaterialTheme.colorScheme.primary)
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.status_viewed),
+            color = MaterialTheme.colorScheme.onPrimary,
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.SemiBold,
         )
+    }
+}
+
+@Composable
+private fun BoxScope.ViewedOverlayButton(viewed: Boolean, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .align(Alignment.TopEnd)
+            .padding(10.dp)
+            .size(36.dp)
+            .clip(CircleShape)
+            .background(
+                if (viewed) MaterialTheme.colorScheme.primary
+                else Color.White.copy(alpha = 0.92f)
+            )
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = if (viewed) Icons.Filled.CheckCircle else Icons.Outlined.CheckCircle,
+            contentDescription = stringResource(R.string.action_toggle_viewed),
+            tint = if (viewed) MaterialTheme.colorScheme.onPrimary else Color(0xFF505050),
+            modifier = Modifier.size(22.dp),
+        )
+    }
+}
+
+@Composable
+private fun DotsIndicator(
+    count: Int,
+    selected: Int,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(5.dp),
+    ) {
+        repeat(count) { index ->
+            val isSelected = index == selected
+            Box(
+                modifier = Modifier
+                    .size(if (isSelected) 7.dp else 6.dp)
+                    .clip(CircleShape)
+                    .background(
+                        if (isSelected) Color.White
+                        else Color.White.copy(alpha = 0.55f)
+                    ),
+            )
+        }
     }
 }
 

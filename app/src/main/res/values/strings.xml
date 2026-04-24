@@ -20,8 +20,12 @@
     <string name="action_mark_full">Mark as full</string>
     <string name="action_unmark_full">Unmark full</string>
     <string name="badge_full">Full</string>
-    <string name="badge_cover">Cover</string>
-    <string name="action_set_as_cover">Set as cover</string>
+    <string name="section_covers">Cover photos</string>
+    <string name="add_cover">Add cover</string>
+    <string name="delete_cover">Delete cover</string>
+    <string name="delete_cover_title">Delete this cover?</string>
+    <string name="delete_cover_message">The cover photo will be permanently removed.</string>
+    <string name="sheet_add_cover_title">Add cover photo</string>
 
     <string name="action_back">Back</string>
     <string name="action_edit">Edit</string>
@@ -33,6 +37,9 @@
     <string name="status_not_contacted">Not contacted</string>
     <string name="status_contacted">Contacted</string>
     <string name="status_viewed">Viewed</string>
+    <string name="status_undecided">Undecided</string>
+    <string name="status_maybe">Maybe</string>
+    <string name="status_rejected">Not taking</string>
 
     <string name="section_photos">Photos</string>
     <string name="section_details">Details</string>

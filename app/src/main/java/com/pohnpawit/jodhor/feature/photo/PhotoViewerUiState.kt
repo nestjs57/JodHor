@@ -6,5 +6,4 @@ data class PhotoViewerUiState(
     val isLoading: Boolean = true,
     val photos: List<Photo> = emptyList(),
     val initialPhotoId: Long = -1L,
-    val coverPhotoId: Long? = null,
 )

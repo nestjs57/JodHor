@@ -90,3 +90,22 @@ val MIGRATION_5_6 = object : Migration(5, 6) {
         db.execSQL("ALTER TABLE dorms ADD COLUMN coverPhotoId INTEGER")
     }
 }
+
+val MIGRATION_6_7 = object : Migration(6, 7) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `cover_photos` (
+                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                `dormId` INTEGER NOT NULL,
+                `filePath` TEXT NOT NULL,
+                `sortOrder` INTEGER NOT NULL,
+                FOREIGN KEY(`dormId`) REFERENCES `dorms`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
+            )
+            """.trimIndent()
+        )
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS `index_cover_photos_dormId` ON `cover_photos` (`dormId`)"
+        )
+    }
+}

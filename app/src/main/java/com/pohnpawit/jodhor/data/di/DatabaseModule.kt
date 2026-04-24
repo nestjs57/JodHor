@@ -2,6 +2,7 @@ package com.pohnpawit.jodhor.data.di
 
 import android.content.Context
 import androidx.room.Room
+import com.pohnpawit.jodhor.data.local.db.CoverPhotoDao
 import com.pohnpawit.jodhor.data.local.db.DormDao
 import com.pohnpawit.jodhor.data.local.db.JodHorDatabase
 import com.pohnpawit.jodhor.data.local.db.PhoneContactDao
@@ -11,6 +12,7 @@ import com.pohnpawit.jodhor.data.local.db.migration.MIGRATION_2_3
 import com.pohnpawit.jodhor.data.local.db.migration.MIGRATION_3_4
 import com.pohnpawit.jodhor.data.local.db.migration.MIGRATION_4_5
 import com.pohnpawit.jodhor.data.local.db.migration.MIGRATION_5_6
+import com.pohnpawit.jodhor.data.local.db.migration.MIGRATION_6_7
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,7 +28,14 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): JodHorDatabase =
         Room.databaseBuilder(context, JodHorDatabase::class.java, "jodhor.db")
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+            .addMigrations(
+                MIGRATION_1_2,
+                MIGRATION_2_3,
+                MIGRATION_3_4,
+                MIGRATION_4_5,
+                MIGRATION_5_6,
+                MIGRATION_6_7,
+            )
             .build()
 
     @Provides
@@ -37,4 +46,7 @@ object DatabaseModule {
 
     @Provides
     fun providePhoneContactDao(db: JodHorDatabase): PhoneContactDao = db.phoneContactDao()
+
+    @Provides
+    fun provideCoverPhotoDao(db: JodHorDatabase): CoverPhotoDao = db.coverPhotoDao()
 }

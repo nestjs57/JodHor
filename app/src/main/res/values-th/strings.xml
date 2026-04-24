@@ -18,8 +18,12 @@
     <string name="action_mark_full">ทำเครื่องหมายห้องเต็ม</string>
     <string name="action_unmark_full">ยกเลิกห้องเต็ม</string>
     <string name="badge_full">เต็ม</string>
-    <string name="badge_cover">ปก</string>
-    <string name="action_set_as_cover">ตั้งเป็นรูปปก</string>
+    <string name="section_covers">รูปปก</string>
+    <string name="add_cover">เพิ่มรูปปก</string>
+    <string name="delete_cover">ลบรูปปก</string>
+    <string name="delete_cover_title">ลบรูปปกนี้?</string>
+    <string name="delete_cover_message">รูปปกจะถูกลบอย่างถาวร</string>
+    <string name="sheet_add_cover_title">เพิ่มรูปปก</string>
 
     <string name="action_back">ย้อนกลับ</string>
     <string name="action_edit">แก้ไข</string>
@@ -31,6 +35,9 @@
     <string name="status_not_contacted">ยังไม่ติดต่อ</string>
     <string name="status_contacted">ติดต่อแล้ว</string>
     <string name="status_viewed">ดูแล้ว</string>
+    <string name="status_undecided">ยังไม่ตัดสินใจ</string>
+    <string name="status_maybe">อาจจะเอา</string>
+    <string name="status_rejected">ไม่เอา</string>
 
     <string name="section_photos">รูปภาพ</string>
     <string name="section_details">รายละเอียด</string>

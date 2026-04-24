@@ -1,11 +1,14 @@
 package com.pohnpawit.jodhor.data.repository
 
+import com.pohnpawit.jodhor.data.local.db.CoverPhotoDao
 import com.pohnpawit.jodhor.data.local.db.DormDao
 import com.pohnpawit.jodhor.data.local.db.PhoneContactDao
 import com.pohnpawit.jodhor.data.local.db.PhotoDao
+import com.pohnpawit.jodhor.data.local.entity.CoverPhotoEntity
 import com.pohnpawit.jodhor.data.local.entity.PhotoEntity
 import com.pohnpawit.jodhor.data.local.entity.toDomain
 import com.pohnpawit.jodhor.data.local.entity.toEntity
+import com.pohnpawit.jodhor.data.model.CoverPhoto
 import com.pohnpawit.jodhor.data.model.Dorm
 import com.pohnpawit.jodhor.data.model.DormPreview
 import com.pohnpawit.jodhor.data.model.DormStatus
@@ -22,6 +25,7 @@ class DormRepositoryImpl @Inject constructor(
     private val dormDao: DormDao,
     private val photoDao: PhotoDao,
     private val phoneContactDao: PhoneContactDao,
+    private val coverPhotoDao: CoverPhotoDao,
     private val photoFileStore: PhotoFileStore,
 ) : DormRepository {
 
@@ -64,10 +68,6 @@ class DormRepositoryImpl @Inject constructor(
         dormDao.setStatus(id, status.name, viewedAt)
     }
 
-    override suspend fun setCoverPhoto(dormId: Long, photoId: Long?) {
-        dormDao.setCoverPhoto(dormId, photoId)
-    }
-
     override fun observePhotos(dormId: Long): Flow<List<Photo>> =
         photoDao.observeByDorm(dormId).map { list -> list.map { it.toDomain() } }
 
@@ -86,16 +86,36 @@ class DormRepositoryImpl @Inject constructor(
 
     override suspend fun deletePhoto(photoId: Long) {
         val photo = photoDao.getById(photoId) ?: return
-        val parentDorm = dormDao.getById(photo.dormId)
-        if (parentDorm?.coverPhotoId == photoId) {
-            dormDao.setCoverPhoto(parentDorm.id, null)
-        }
         photoDao.delete(photo)
         photoFileStore.delete(photo.filePath)
     }
 
     override suspend fun reorderPhotos(orderedIds: List<Long>) {
         photoDao.applyOrder(orderedIds)
+    }
+
+    override fun observeCovers(dormId: Long): Flow<List<CoverPhoto>> =
+        coverPhotoDao.observeByDorm(dormId).map { list -> list.map { it.toDomain() } }
+
+    override suspend fun addCover(dormId: Long, filePath: String): Long {
+        val nextOrder = coverPhotoDao.maxSortOrder(dormId) + 1
+        return coverPhotoDao.insert(
+            CoverPhotoEntity(
+                dormId = dormId,
+                filePath = filePath,
+                sortOrder = nextOrder,
+            )
+        )
+    }
+
+    override suspend fun deleteCover(coverId: Long) {
+        val cover = coverPhotoDao.getById(coverId) ?: return
+        coverPhotoDao.delete(cover)
+        photoFileStore.delete(cover.filePath)
+    }
+
+    override suspend fun reorderCovers(orderedIds: List<Long>) {
+        coverPhotoDao.applyOrder(orderedIds)
     }
 
     override fun observePhones(dormId: Long): Flow<List<PhoneContact>> =

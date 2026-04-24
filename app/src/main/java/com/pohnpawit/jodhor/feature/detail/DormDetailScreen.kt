@@ -8,6 +8,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +35,7 @@ import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
@@ -43,10 +48,14 @@ import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.Circle
+import androidx.compose.material.icons.outlined.Help
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -84,12 +93,14 @@ import coil3.compose.AsyncImage
 import com.pohnpawit.jodhor.R
 import com.pohnpawit.jodhor.core.designsystem.modifier.dashedBorder
 import com.pohnpawit.jodhor.core.util.formatThaiPhone
+import com.pohnpawit.jodhor.data.model.CoverPhoto
 import com.pohnpawit.jodhor.data.model.Dorm
 import com.pohnpawit.jodhor.data.model.DormStatus
 import com.pohnpawit.jodhor.data.model.PhoneContact
 import com.pohnpawit.jodhor.data.model.Photo
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyGridState
+import sh.calvin.reorderable.rememberReorderableLazyListState
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -105,8 +116,10 @@ fun DormDetailScreen(
     val dorm = state.dorm
 
     var showAddPhotoSheet by remember { mutableStateOf(false) }
+    var showAddCoverSheet by remember { mutableStateOf(false) }
     var showDeleteDormDialog by remember { mutableStateOf(false) }
     var photoPendingDelete by remember { mutableStateOf<Photo?>(null) }
+    var coverPendingDelete by remember { mutableStateOf<CoverPhoto?>(null) }
 
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
@@ -115,6 +128,14 @@ fun DormDetailScreen(
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = 10),
     ) { uris -> viewModel.onPickedFromGallery(uris) }
+
+    val coverCameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture(),
+    ) { success -> viewModel.onCoverCameraResult(success) }
+
+    val coverGalleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = 10),
+    ) { uris -> viewModel.onCoverPickedFromGallery(uris) }
 
     var localPhotos by remember { mutableStateOf(state.photos) }
     LaunchedEffect(state.photos) {
@@ -209,17 +230,27 @@ fun DormDetailScreen(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             item(span = { GridItemSpan(maxLineSpan) }) {
-                StatusChip(status = dorm.status, onClick = viewModel::cycleStatus)
+                StatusChip(status = dorm.status, onSelect = viewModel::setStatus)
             }
             item(span = { GridItemSpan(maxLineSpan) }) {
+                SectionHeader(stringResource(R.string.section_covers))
+            }
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                CoverStrip(
+                    covers = state.covers,
+                    onAddClick = { showAddCoverSheet = true },
+                    onDeleteClick = { cover -> coverPendingDelete = cover },
+                    onReorder = viewModel::reorderCovers,
+                )
+            }
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Spacer(Modifier.height(8.dp))
                 SectionHeader(stringResource(R.string.section_photos))
             }
-            val effectiveCoverId = dorm.coverPhotoId ?: localPhotos.firstOrNull()?.id
             items(localPhotos, key = { it.id }) { photo ->
                 ReorderableItem(reorderableState, key = photo.id) { isDragging ->
                     PhotoTile(
                         photo = photo,
-                        isCover = photo.id == effectiveCoverId,
                         isDragging = isDragging,
                         dragHandle = Modifier.longPressDraggableHandle(),
                         onClick = { onOpenPhoto(photo.id) },
@@ -241,7 +272,8 @@ fun DormDetailScreen(
     }
 
     if (showAddPhotoSheet) {
-        AddPhotoSheet(
+        AddMediaSheet(
+            title = stringResource(R.string.sheet_add_photo_title),
             onDismiss = { showAddPhotoSheet = false },
             onCamera = {
                 showAddPhotoSheet = false
@@ -252,6 +284,35 @@ fun DormDetailScreen(
                 galleryLauncher.launch(
                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                 )
+            },
+        )
+    }
+
+    if (showAddCoverSheet) {
+        AddMediaSheet(
+            title = stringResource(R.string.sheet_add_cover_title),
+            onDismiss = { showAddCoverSheet = false },
+            onCamera = {
+                showAddCoverSheet = false
+                coverCameraLauncher.launch(viewModel.prepareCoverCapture())
+            },
+            onGallery = {
+                showAddCoverSheet = false
+                coverGalleryLauncher.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            },
+        )
+    }
+
+    coverPendingDelete?.let { cover ->
+        ConfirmDialog(
+            title = stringResource(R.string.delete_cover_title),
+            message = stringResource(R.string.delete_cover_message),
+            onDismiss = { coverPendingDelete = null },
+            onConfirm = {
+                coverPendingDelete = null
+                viewModel.deleteCover(cover.id)
             },
         )
     }
@@ -282,15 +343,35 @@ fun DormDetailScreen(
 }
 
 @Composable
-private fun StatusChip(status: DormStatus, onClick: () -> Unit) {
-    AssistChip(
-        onClick = onClick,
-        leadingIcon = { Icon(status.icon, contentDescription = null) },
-        label = { Text(stringResource(status.labelRes)) },
-        colors = AssistChipDefaults.assistChipColors(
-            leadingIconContentColor = status.tint(),
-        ),
-    )
+private fun StatusChip(status: DormStatus, onSelect: (DormStatus) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    Box {
+        AssistChip(
+            onClick = { expanded = true },
+            leadingIcon = { Icon(status.icon, contentDescription = null) },
+            label = { Text(stringResource(status.labelRes)) },
+            colors = AssistChipDefaults.assistChipColors(
+                leadingIconContentColor = status.tint(),
+            ),
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            DormStatus.entries.forEach { option ->
+                DropdownMenuItem(
+                    leadingIcon = {
+                        Icon(option.icon, contentDescription = null, tint = option.tint())
+                    },
+                    text = { Text(stringResource(option.labelRes)) },
+                    onClick = {
+                        expanded = false
+                        onSelect(option)
+                    },
+                )
+            }
+        }
+    }
 }
 
 @Composable
@@ -326,7 +407,6 @@ private fun AddPhotoTile(onClick: () -> Unit) {
 @Composable
 private fun PhotoTile(
     photo: Photo,
-    isCover: Boolean,
     isDragging: Boolean,
     dragHandle: Modifier,
     onClick: () -> Unit,
@@ -347,22 +427,6 @@ private fun PhotoTile(
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize().clickable(onClick = onClick),
         )
-        if (isCover) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(4.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.92f))
-                    .padding(horizontal = 6.dp, vertical = 2.dp),
-            ) {
-                Text(
-                    text = stringResource(R.string.badge_cover),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    style = MaterialTheme.typography.labelSmall,
-                )
-            }
-        }
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
@@ -498,7 +562,8 @@ private fun MapLinkRow(onClick: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AddPhotoSheet(
+private fun AddMediaSheet(
+    title: String,
     onDismiss: () -> Unit,
     onCamera: () -> Unit,
     onGallery: () -> Unit,
@@ -507,7 +572,7 @@ private fun AddPhotoSheet(
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
         Column(Modifier.padding(bottom = 16.dp)) {
             Text(
-                text = stringResource(R.string.sheet_add_photo_title),
+                text = title,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             )
@@ -522,6 +587,80 @@ private fun AddPhotoSheet(
                 modifier = Modifier.clickable(onClick = onGallery),
             )
         }
+    }
+}
+
+@Composable
+private fun CoverStrip(
+    covers: List<CoverPhoto>,
+    onAddClick: () -> Unit,
+    onDeleteClick: (CoverPhoto) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .horizontalScroll(rememberScrollState())
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        covers.forEach { cover ->
+            CoverTile(cover = cover, onDelete = { onDeleteClick(cover) })
+        }
+        AddCoverTile(onClick = onAddClick)
+    }
+}
+
+@Composable
+private fun CoverTile(cover: CoverPhoto, onDelete: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .size(112.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color.Black),
+    ) {
+        AsyncImage(
+            model = File(cover.filePath),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize(),
+        )
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(4.dp)
+                .size(28.dp)
+                .clip(CircleShape)
+                .background(Color.Black.copy(alpha = 0.5f))
+                .clickable(onClick = onDelete),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Close,
+                contentDescription = stringResource(R.string.delete_cover),
+                tint = Color.White,
+                modifier = Modifier.size(16.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun AddCoverTile(onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .size(112.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .dashedBorder(
+                color = MaterialTheme.colorScheme.outline,
+                cornerRadius = 12.dp,
+            )
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Add,
+            contentDescription = stringResource(R.string.add_cover),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
@@ -554,6 +693,9 @@ private val DormStatus.icon: ImageVector
         DormStatus.NOT_CONTACTED -> Icons.Outlined.Circle
         DormStatus.CONTACTED -> Icons.Filled.Phone
         DormStatus.VIEWED -> Icons.Filled.CheckCircle
+        DormStatus.UNDECIDED -> Icons.Outlined.Help
+        DormStatus.MAYBE -> Icons.Filled.ThumbUp
+        DormStatus.REJECTED -> Icons.Filled.Cancel
     }
 
 @Composable
@@ -561,6 +703,9 @@ private fun DormStatus.tint(): Color = when (this) {
     DormStatus.NOT_CONTACTED -> MaterialTheme.colorScheme.outline
     DormStatus.CONTACTED -> MaterialTheme.colorScheme.tertiary
     DormStatus.VIEWED -> MaterialTheme.colorScheme.primary
+    DormStatus.UNDECIDED -> MaterialTheme.colorScheme.outline
+    DormStatus.MAYBE -> MaterialTheme.colorScheme.secondary
+    DormStatus.REJECTED -> MaterialTheme.colorScheme.error
 }
 
 private val DormStatus.labelRes: Int
@@ -568,4 +713,7 @@ private val DormStatus.labelRes: Int
         DormStatus.NOT_CONTACTED -> R.string.status_not_contacted
         DormStatus.CONTACTED -> R.string.status_contacted
         DormStatus.VIEWED -> R.string.status_viewed
+        DormStatus.UNDECIDED -> R.string.status_undecided
+        DormStatus.MAYBE -> R.string.status_maybe
+        DormStatus.REJECTED -> R.string.status_rejected
     }

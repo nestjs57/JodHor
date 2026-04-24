@@ -17,25 +17,30 @@ class PhotoFileStore @Inject constructor(
     private val photosDir: File by lazy {
         File(context.filesDir, "photos").apply { if (!exists()) mkdirs() }
     }
-
-    fun createPhotoFile(): File {
-        val name = "photo_${System.currentTimeMillis()}.jpg"
-        return File(photosDir, name)
+    private val coversDir: File by lazy {
+        File(context.filesDir, "covers").apply { if (!exists()) mkdirs() }
     }
+
+    fun createPhotoFile(): File =
+        File(photosDir, "photo_${System.currentTimeMillis()}.jpg")
+
+    fun createCoverFile(): File =
+        File(coversDir, "cover_${System.currentTimeMillis()}.jpg")
 
     fun uriFor(file: File): Uri =
         FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
 
-    suspend fun copyFromUri(uri: Uri): String? = withContext(Dispatchers.IO) {
-        val file = createPhotoFile()
+    suspend fun copyFromUri(uri: Uri): String? = copyToFile(uri, createPhotoFile())
+
+    suspend fun copyCoverFromUri(uri: Uri): String? = copyToFile(uri, createCoverFile())
+
+    private suspend fun copyToFile(uri: Uri, file: File): String? = withContext(Dispatchers.IO) {
         val stream = context.contentResolver.openInputStream(uri)
         if (stream == null) {
             file.delete()
             return@withContext null
         }
-        stream.use { input ->
-            file.outputStream().use(input::copyTo)
-        }
+        stream.use { input -> file.outputStream().use(input::copyTo) }
         file.absolutePath
     }
 

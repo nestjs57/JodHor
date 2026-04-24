@@ -4,13 +4,19 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.pohnpawit.jodhor.data.local.db.converter.DormStatusConverter
+import com.pohnpawit.jodhor.data.local.entity.CoverPhotoEntity
 import com.pohnpawit.jodhor.data.local.entity.DormEntity
 import com.pohnpawit.jodhor.data.local.entity.PhoneContactEntity
 import com.pohnpawit.jodhor.data.local.entity.PhotoEntity
 
 @Database(
-    entities = [DormEntity::class, PhotoEntity::class, PhoneContactEntity::class],
-    version = 6,
+    entities = [
+        DormEntity::class,
+        PhotoEntity::class,
+        PhoneContactEntity::class,
+        CoverPhotoEntity::class,
+    ],
+    version = 7,
     exportSchema = true,
 )
 @TypeConverters(DormStatusConverter::class)
@@ -18,4 +24,5 @@ abstract class JodHorDatabase : RoomDatabase() {
     abstract fun dormDao(): DormDao
     abstract fun photoDao(): PhotoDao
     abstract fun phoneContactDao(): PhoneContactDao
+    abstract fun coverPhotoDao(): CoverPhotoDao
 }
