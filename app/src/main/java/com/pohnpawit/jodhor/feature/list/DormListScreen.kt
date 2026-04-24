@@ -100,9 +100,6 @@ fun DormListScreen(
                             DormRow(
                                 preview = preview,
                                 onClick = { onOpenDorm(preview.dorm.id) },
-                                onFavorite = {
-                                    viewModel.toggleFavorite(preview.dorm.id, !preview.dorm.isFavorite)
-                                },
                                 onToggleViewed = {
                                     viewModel.toggleViewed(preview.dorm.id, preview.dorm.status)
                                 },

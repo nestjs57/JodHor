@@ -45,10 +45,6 @@ class DormListViewModel @Inject constructor(
         filter.value = value
     }
 
-    fun toggleFavorite(id: Long, isFavorite: Boolean) {
-        viewModelScope.launch { repository.setFavorite(id, isFavorite) }
-    }
-
     fun toggleViewed(id: Long, currentStatus: DormStatus) {
         val next = if (currentStatus == DormStatus.VIEWED) DormStatus.CONTACTED else DormStatus.VIEWED
         viewModelScope.launch { repository.setStatus(id, next) }

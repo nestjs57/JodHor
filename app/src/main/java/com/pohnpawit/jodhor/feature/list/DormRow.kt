@@ -15,8 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -47,7 +45,6 @@ private const val MAX_PREVIEW_SLOTS = 5
 fun DormRow(
     preview: DormPreview,
     onClick: () -> Unit,
-    onFavorite: () -> Unit,
     onToggleViewed: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -93,14 +90,6 @@ fun DormRow(
                         contentDescription = stringResource(R.string.action_toggle_viewed),
                         tint = if (viewed) MaterialTheme.colorScheme.primary
                                else MaterialTheme.colorScheme.outline,
-                    )
-                }
-                IconButton(onClick = onFavorite) {
-                    Icon(
-                        imageVector = if (dorm.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                        contentDescription = stringResource(
-                            if (dorm.isFavorite) R.string.action_unfavorite else R.string.action_favorite
-                        ),
                     )
                 }
             }
