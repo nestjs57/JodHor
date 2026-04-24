@@ -16,6 +16,7 @@ room = "2.6.1"
 kotlinxSerialization = "1.7.3"
 coil = "3.0.4"
 reorderable = "2.4.0"
+zoomable = "2.4.0"
 datastore = "1.1.1"
 coroutines = "1.9.0"
 
@@ -55,6 +56,8 @@ kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 
 reorderable = { group = "sh.calvin.reorderable", name = "reorderable", version.ref = "reorderable" }
+
+zoomable = { group = "net.engawapg.lib", name = "zoomable", version.ref = "zoomable" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

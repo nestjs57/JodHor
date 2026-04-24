@@ -48,6 +48,8 @@ import coil3.compose.AsyncImage
 import com.pohnpawit.jodhor.R
 import com.pohnpawit.jodhor.data.model.Photo
 import kotlinx.coroutines.launch
+import net.engawapg.lib.zoomable.rememberZoomState
+import net.engawapg.lib.zoomable.zoomable
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -150,11 +152,16 @@ private fun PhotoPager(
                 .fillMaxSize()
                 .padding(padding),
         ) { page ->
+            val zoomState = rememberZoomState()
+            LaunchedEffect(page) { zoomState.reset() }
             AsyncImage(
                 model = File(photos[page].filePath),
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
-                modifier = Modifier.fillMaxSize(),
+                onSuccess = { zoomState.setContentSize(it.painter.intrinsicSize) },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .zoomable(zoomState),
             )
         }
     }

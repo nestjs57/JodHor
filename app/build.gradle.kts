@@ -77,6 +77,8 @@ dependencies {
 
     implementation(libs.reorderable)
 
+    implementation(libs.zoomable)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
