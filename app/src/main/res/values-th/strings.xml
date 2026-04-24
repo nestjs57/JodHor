@@ -18,6 +18,8 @@
     <string name="action_mark_full">ทำเครื่องหมายห้องเต็ม</string>
     <string name="action_unmark_full">ยกเลิกห้องเต็ม</string>
     <string name="badge_full">เต็ม</string>
+    <string name="badge_cover">ปก</string>
+    <string name="action_set_as_cover">ตั้งเป็นรูปปก</string>
 
     <string name="action_back">ย้อนกลับ</string>
     <string name="action_edit">แก้ไข</string>

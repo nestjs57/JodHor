@@ -50,6 +50,9 @@ interface DormDao {
     @Query("UPDATE dorms SET sortOrder = :order WHERE id = :id")
     suspend fun updateSortOrder(id: Long, order: Int)
 
+    @Query("UPDATE dorms SET coverPhotoId = :photoId WHERE id = :id")
+    suspend fun setCoverPhoto(id: Long, photoId: Long?)
+
     @Transaction
     suspend fun applyOrder(orderedIds: List<Long>) {
         orderedIds.forEachIndexed { index, id -> updateSortOrder(id, index) }

@@ -48,7 +48,7 @@ fun DormRow(
     modifier: Modifier = Modifier,
 ) {
     val dorm = preview.dorm
-    val cover = preview.photos.firstOrNull()
+    val cover = preview.cover
     Column(
         modifier = modifier
             .fillMaxWidth()

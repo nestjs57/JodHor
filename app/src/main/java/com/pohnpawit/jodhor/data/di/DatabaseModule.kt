@@ -10,6 +10,7 @@ import com.pohnpawit.jodhor.data.local.db.migration.MIGRATION_1_2
 import com.pohnpawit.jodhor.data.local.db.migration.MIGRATION_2_3
 import com.pohnpawit.jodhor.data.local.db.migration.MIGRATION_3_4
 import com.pohnpawit.jodhor.data.local.db.migration.MIGRATION_4_5
+import com.pohnpawit.jodhor.data.local.db.migration.MIGRATION_5_6
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,7 +26,7 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): JodHorDatabase =
         Room.databaseBuilder(context, JodHorDatabase::class.java, "jodhor.db")
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
             .build()
 
     @Provides

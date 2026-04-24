@@ -214,10 +214,12 @@ fun DormDetailScreen(
             item(span = { GridItemSpan(maxLineSpan) }) {
                 SectionHeader(stringResource(R.string.section_photos))
             }
+            val effectiveCoverId = dorm.coverPhotoId ?: localPhotos.firstOrNull()?.id
             items(localPhotos, key = { it.id }) { photo ->
                 ReorderableItem(reorderableState, key = photo.id) { isDragging ->
                     PhotoTile(
                         photo = photo,
+                        isCover = photo.id == effectiveCoverId,
                         isDragging = isDragging,
                         dragHandle = Modifier.longPressDraggableHandle(),
                         onClick = { onOpenPhoto(photo.id) },
@@ -324,6 +326,7 @@ private fun AddPhotoTile(onClick: () -> Unit) {
 @Composable
 private fun PhotoTile(
     photo: Photo,
+    isCover: Boolean,
     isDragging: Boolean,
     dragHandle: Modifier,
     onClick: () -> Unit,
@@ -344,6 +347,22 @@ private fun PhotoTile(
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize().clickable(onClick = onClick),
         )
+        if (isCover) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(4.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.92f))
+                    .padding(horizontal = 6.dp, vertical = 2.dp),
+            ) {
+                Text(
+                    text = stringResource(R.string.badge_cover),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    style = MaterialTheme.typography.labelSmall,
+                )
+            }
+        }
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)

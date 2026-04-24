@@ -20,6 +20,8 @@
     <string name="action_mark_full">Mark as full</string>
     <string name="action_unmark_full">Unmark full</string>
     <string name="badge_full">Full</string>
+    <string name="badge_cover">Cover</string>
+    <string name="action_set_as_cover">Set as cover</string>
 
     <string name="action_back">Back</string>
     <string name="action_edit">Edit</string>

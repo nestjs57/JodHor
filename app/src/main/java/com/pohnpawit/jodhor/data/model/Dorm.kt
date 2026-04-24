@@ -14,6 +14,7 @@ data class Dorm(
     val isFavorite: Boolean = false,
     val isFull: Boolean = false,
     val sortOrder: Int = 0,
+    val coverPhotoId: Long? = null,
     val createdAt: Long = System.currentTimeMillis(),
     val viewedAt: Long? = null,
 )

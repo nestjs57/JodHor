@@ -84,3 +84,9 @@ val MIGRATION_4_5 = object : Migration(4, 5) {
         db.execSQL("UPDATE dorms SET sortOrder = id")
     }
 }
+
+val MIGRATION_5_6 = object : Migration(5, 6) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE dorms ADD COLUMN coverPhotoId INTEGER")
+    }
+}

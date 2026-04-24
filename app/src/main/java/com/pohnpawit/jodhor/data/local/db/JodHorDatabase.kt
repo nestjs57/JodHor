@@ -10,7 +10,7 @@ import com.pohnpawit.jodhor.data.local.entity.PhotoEntity
 
 @Database(
     entities = [DormEntity::class, PhotoEntity::class, PhoneContactEntity::class],
-    version = 5,
+    version = 6,
     exportSchema = true,
 )
 @TypeConverters(DormStatusConverter::class)

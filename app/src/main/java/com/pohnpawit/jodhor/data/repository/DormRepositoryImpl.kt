@@ -64,6 +64,10 @@ class DormRepositoryImpl @Inject constructor(
         dormDao.setStatus(id, status.name, viewedAt)
     }
 
+    override suspend fun setCoverPhoto(dormId: Long, photoId: Long?) {
+        dormDao.setCoverPhoto(dormId, photoId)
+    }
+
     override fun observePhotos(dormId: Long): Flow<List<Photo>> =
         photoDao.observeByDorm(dormId).map { list -> list.map { it.toDomain() } }
 
@@ -82,6 +86,10 @@ class DormRepositoryImpl @Inject constructor(
 
     override suspend fun deletePhoto(photoId: Long) {
         val photo = photoDao.getById(photoId) ?: return
+        val parentDorm = dormDao.getById(photo.dormId)
+        if (parentDorm?.coverPhotoId == photoId) {
+            dormDao.setCoverPhoto(parentDorm.id, null)
+        }
         photoDao.delete(photo)
         photoFileStore.delete(photo.filePath)
     }

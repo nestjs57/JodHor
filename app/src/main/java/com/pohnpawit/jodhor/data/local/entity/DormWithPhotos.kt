@@ -10,7 +10,17 @@ data class DormWithPhotos(
     val photos: List<PhotoEntity>,
 )
 
-fun DormWithPhotos.toDomain(): DormPreview = DormPreview(
-    dorm = dorm.toDomain(),
-    photos = photos.sortedBy { it.sortOrder }.map { it.toDomain() },
-)
+fun DormWithPhotos.toDomain(): DormPreview {
+    val sorted = photos.sortedBy { it.sortOrder }.map { it.toDomain() }
+    val coverId = dorm.coverPhotoId
+    val cover = if (coverId != null) {
+        sorted.firstOrNull { it.id == coverId } ?: sorted.firstOrNull()
+    } else {
+        sorted.firstOrNull()
+    }
+    return DormPreview(
+        dorm = dorm.toDomain(),
+        photos = sorted,
+        cover = cover,
+    )
+}

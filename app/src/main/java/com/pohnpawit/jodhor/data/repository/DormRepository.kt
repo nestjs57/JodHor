@@ -17,6 +17,7 @@ interface DormRepository {
     suspend fun setFavorite(id: Long, isFavorite: Boolean)
     suspend fun setFull(id: Long, isFull: Boolean)
     suspend fun setStatus(id: Long, status: DormStatus)
+    suspend fun setCoverPhoto(dormId: Long, photoId: Long?)
 
     fun observePhotos(dormId: Long): Flow<List<Photo>>
     suspend fun addPhoto(dormId: Long, filePath: String, caption: String = ""): Long
