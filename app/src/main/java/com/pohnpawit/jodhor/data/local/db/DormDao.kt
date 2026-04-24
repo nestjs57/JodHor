@@ -13,11 +13,11 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DormDao {
-    @Query("SELECT * FROM dorms ORDER BY isFull ASC, isFavorite DESC, createdAt DESC")
+    @Query("SELECT * FROM dorms ORDER BY sortOrder ASC")
     fun observeAll(): Flow<List<DormEntity>>
 
     @Transaction
-    @Query("SELECT * FROM dorms ORDER BY isFull ASC, isFavorite DESC, createdAt DESC")
+    @Query("SELECT * FROM dorms ORDER BY sortOrder ASC")
     fun observeAllWithPhotos(): Flow<List<DormWithPhotos>>
 
     @Query("SELECT * FROM dorms WHERE id = :id")
@@ -25,6 +25,9 @@ interface DormDao {
 
     @Query("SELECT * FROM dorms WHERE id = :id")
     suspend fun getById(id: Long): DormEntity?
+
+    @Query("SELECT COALESCE(MAX(sortOrder), -1) FROM dorms")
+    suspend fun maxSortOrder(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(dorm: DormEntity): Long
@@ -43,4 +46,12 @@ interface DormDao {
 
     @Query("UPDATE dorms SET status = :status, viewedAt = :viewedAt WHERE id = :id")
     suspend fun setStatus(id: Long, status: String, viewedAt: Long?)
+
+    @Query("UPDATE dorms SET sortOrder = :order WHERE id = :id")
+    suspend fun updateSortOrder(id: Long, order: Int)
+
+    @Transaction
+    suspend fun applyOrder(orderedIds: List<Long>) {
+        orderedIds.forEachIndexed { index, id -> updateSortOrder(id, index) }
+    }
 }

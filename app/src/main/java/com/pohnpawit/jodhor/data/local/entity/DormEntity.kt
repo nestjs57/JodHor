@@ -19,6 +19,7 @@ data class DormEntity(
     val status: DormStatus,
     val isFavorite: Boolean,
     val isFull: Boolean,
+    val sortOrder: Int,
     val createdAt: Long,
     val viewedAt: Long?,
 )
@@ -36,6 +37,7 @@ fun DormEntity.toDomain() = Dorm(
     status = status,
     isFavorite = isFavorite,
     isFull = isFull,
+    sortOrder = sortOrder,
     createdAt = createdAt,
     viewedAt = viewedAt,
 )
@@ -53,6 +55,7 @@ fun Dorm.toEntity() = DormEntity(
     status = status,
     isFavorite = isFavorite,
     isFull = isFull,
+    sortOrder = sortOrder,
     createdAt = createdAt,
     viewedAt = viewedAt,
 )

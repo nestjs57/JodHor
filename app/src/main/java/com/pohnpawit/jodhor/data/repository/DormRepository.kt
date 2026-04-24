@@ -13,6 +13,7 @@ interface DormRepository {
     suspend fun getDorm(id: Long): Dorm?
     suspend fun upsertDorm(dorm: Dorm): Long
     suspend fun deleteDorm(id: Long)
+    suspend fun reorderDorms(orderedIds: List<Long>)
     suspend fun setFavorite(id: Long, isFavorite: Boolean)
     suspend fun setFull(id: Long, isFull: Boolean)
     suspend fun setStatus(id: Long, status: DormStatus)

@@ -1,6 +1,5 @@
 package com.pohnpawit.jodhor.feature.list
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,8 +17,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.outlined.Circle
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -51,10 +48,11 @@ fun DormRow(
     preview: DormPreview,
     onClick: () -> Unit,
     onFavorite: () -> Unit,
-    onCycleStatus: () -> Unit,
+    onToggleViewed: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val dorm = preview.dorm
-    Card(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
+    Card(onClick = onClick, modifier = modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier.padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -88,11 +86,13 @@ fun DormRow(
                         )
                     }
                 }
-                IconButton(onClick = onCycleStatus) {
+                IconButton(onClick = onToggleViewed) {
+                    val viewed = dorm.status == DormStatus.VIEWED
                     Icon(
-                        imageVector = dorm.status.icon,
-                        contentDescription = stringResource(R.string.action_cycle_status),
-                        tint = dorm.status.tint(),
+                        imageVector = if (viewed) Icons.Filled.CheckCircle else Icons.Outlined.CheckCircle,
+                        contentDescription = stringResource(R.string.action_toggle_viewed),
+                        tint = if (viewed) MaterialTheme.colorScheme.primary
+                               else MaterialTheme.colorScheme.outline,
                     )
                 }
                 IconButton(onClick = onFavorite) {
@@ -126,28 +126,6 @@ private fun FullBadge() {
         )
     }
 }
-
-private val DormStatus.icon: ImageVector
-    get() = when (this) {
-        DormStatus.NOT_CONTACTED -> Icons.Outlined.Circle
-        DormStatus.CONTACTED -> Icons.Filled.Phone
-        DormStatus.VIEWED -> Icons.Filled.CheckCircle
-    }
-
-@Composable
-private fun DormStatus.tint(): Color = when (this) {
-    DormStatus.NOT_CONTACTED -> MaterialTheme.colorScheme.outline
-    DormStatus.CONTACTED -> MaterialTheme.colorScheme.tertiary
-    DormStatus.VIEWED -> MaterialTheme.colorScheme.primary
-}
-
-@get:StringRes
-val DormStatus.labelRes: Int
-    get() = when (this) {
-        DormStatus.NOT_CONTACTED -> R.string.status_not_contacted
-        DormStatus.CONTACTED -> R.string.status_contacted
-        DormStatus.VIEWED -> R.string.status_viewed
-    }
 
 private sealed interface PreviewSlot {
     data class PhotoSlot(val photo: Photo) : PreviewSlot

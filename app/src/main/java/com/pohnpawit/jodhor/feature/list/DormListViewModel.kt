@@ -3,7 +3,6 @@ package com.pohnpawit.jodhor.feature.list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pohnpawit.jodhor.data.model.DormStatus
-import com.pohnpawit.jodhor.data.model.next
 import com.pohnpawit.jodhor.data.repository.DormRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,7 +49,12 @@ class DormListViewModel @Inject constructor(
         viewModelScope.launch { repository.setFavorite(id, isFavorite) }
     }
 
-    fun cycleStatus(id: Long, currentStatus: DormStatus) {
-        viewModelScope.launch { repository.setStatus(id, currentStatus.next()) }
+    fun toggleViewed(id: Long, currentStatus: DormStatus) {
+        val next = if (currentStatus == DormStatus.VIEWED) DormStatus.CONTACTED else DormStatus.VIEWED
+        viewModelScope.launch { repository.setStatus(id, next) }
+    }
+
+    fun reorderDorms(orderedIds: List<Long>) {
+        viewModelScope.launch { repository.reorderDorms(orderedIds) }
     }
 }

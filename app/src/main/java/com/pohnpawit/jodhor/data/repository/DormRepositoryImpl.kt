@@ -35,7 +35,8 @@ class DormRepositoryImpl @Inject constructor(
 
     override suspend fun upsertDorm(dorm: Dorm): Long =
         if (dorm.id == 0L) {
-            dormDao.insert(dorm.toEntity())
+            val nextSort = dormDao.maxSortOrder() + 1
+            dormDao.insert(dorm.copy(sortOrder = nextSort).toEntity())
         } else {
             dormDao.update(dorm.toEntity())
             dorm.id
@@ -44,6 +45,10 @@ class DormRepositoryImpl @Inject constructor(
     override suspend fun deleteDorm(id: Long) {
         val entity = dormDao.getById(id) ?: return
         dormDao.delete(entity)
+    }
+
+    override suspend fun reorderDorms(orderedIds: List<Long>) {
+        dormDao.applyOrder(orderedIds)
     }
 
     override suspend fun setFavorite(id: Long, isFavorite: Boolean) {

@@ -14,6 +14,7 @@
     <string name="amount_baht">฿%1$,d</string>
     <string name="contract_years_value">%1$d year(s)</string>
     <string name="action_cycle_status">Change status</string>
+    <string name="action_toggle_viewed">Toggle viewed</string>
     <string name="action_favorite">Favorite</string>
     <string name="action_unfavorite">Remove favorite</string>
     <string name="action_mark_full">Mark as full</string>

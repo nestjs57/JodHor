@@ -13,6 +13,7 @@ data class Dorm(
     val status: DormStatus = DormStatus.NOT_CONTACTED,
     val isFavorite: Boolean = false,
     val isFull: Boolean = false,
+    val sortOrder: Int = 0,
     val createdAt: Long = System.currentTimeMillis(),
     val viewedAt: Long? = null,
 )
