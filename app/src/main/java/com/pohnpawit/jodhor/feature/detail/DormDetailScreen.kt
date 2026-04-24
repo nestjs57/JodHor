@@ -49,8 +49,8 @@ import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.automirrored.outlined.Help
 import androidx.compose.material.icons.outlined.Circle
-import androidx.compose.material.icons.outlined.Help
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
@@ -595,27 +595,60 @@ private fun CoverStrip(
     covers: List<CoverPhoto>,
     onAddClick: () -> Unit,
     onDeleteClick: (CoverPhoto) -> Unit,
+    onReorder: (List<Long>) -> Unit,
 ) {
-    Row(
-        modifier = Modifier
-            .horizontalScroll(rememberScrollState())
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        covers.forEach { cover ->
-            CoverTile(cover = cover, onDelete = { onDeleteClick(cover) })
+    var localCovers by remember { mutableStateOf(covers) }
+    LaunchedEffect(covers) {
+        if (localCovers != covers) {
+            localCovers = covers
         }
-        AddCoverTile(onClick = onAddClick)
+    }
+
+    val listState = rememberLazyListState()
+    val reorderState = rememberReorderableLazyListState(listState) { from, to ->
+        val fromId = from.key as? Long ?: return@rememberReorderableLazyListState
+        val toId = to.key as? Long ?: return@rememberReorderableLazyListState
+        val updated = localCovers.toMutableList()
+        val fromIdx = updated.indexOfFirst { it.id == fromId }
+        val toIdx = updated.indexOfFirst { it.id == toId }
+        if (fromIdx < 0 || toIdx < 0) return@rememberReorderableLazyListState
+        updated.add(toIdx, updated.removeAt(fromIdx))
+        localCovers = updated
+        onReorder(updated.map { it.id })
+    }
+
+    LazyRow(
+        state = listState,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(vertical = 4.dp),
+    ) {
+        items(localCovers, key = { it.id }) { cover ->
+            ReorderableItem(reorderState, key = cover.id) { _ ->
+                CoverTile(
+                    cover = cover,
+                    dragHandle = Modifier.longPressDraggableHandle(),
+                    onDelete = { onDeleteClick(cover) },
+                )
+            }
+        }
+        item(key = "add_cover") {
+            AddCoverTile(onClick = onAddClick)
+        }
     }
 }
 
 @Composable
-private fun CoverTile(cover: CoverPhoto, onDelete: () -> Unit) {
+private fun CoverTile(
+    cover: CoverPhoto,
+    dragHandle: Modifier,
+    onDelete: () -> Unit,
+) {
     Box(
         modifier = Modifier
             .size(112.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(Color.Black),
+            .background(Color.Black)
+            .then(dragHandle),
     ) {
         AsyncImage(
             model = File(cover.filePath),
@@ -693,7 +726,7 @@ private val DormStatus.icon: ImageVector
         DormStatus.NOT_CONTACTED -> Icons.Outlined.Circle
         DormStatus.CONTACTED -> Icons.Filled.Phone
         DormStatus.VIEWED -> Icons.Filled.CheckCircle
-        DormStatus.UNDECIDED -> Icons.Outlined.Help
+        DormStatus.UNDECIDED -> Icons.AutoMirrored.Outlined.Help
         DormStatus.MAYBE -> Icons.Filled.ThumbUp
         DormStatus.REJECTED -> Icons.Filled.Cancel
     }
