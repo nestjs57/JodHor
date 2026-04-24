@@ -17,4 +17,5 @@ interface DormRepository {
     fun observePhotos(dormId: Long): Flow<List<Photo>>
     suspend fun addPhoto(dormId: Long, filePath: String, caption: String = ""): Long
     suspend fun deletePhoto(photoId: Long)
+    suspend fun reorderPhotos(orderedIds: List<Long>)
 }

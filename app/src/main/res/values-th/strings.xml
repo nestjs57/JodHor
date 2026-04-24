@@ -10,17 +10,36 @@
     <string name="price_monthly">฿%1$d / เดือน</string>
     <string name="action_toggle_viewed">สลับสถานะดูแล้ว</string>
     <string name="action_favorite">รายการโปรด</string>
+    <string name="action_unfavorite">เอาออกจากรายการโปรด</string>
 
     <string name="action_back">ย้อนกลับ</string>
     <string name="action_edit">แก้ไข</string>
+    <string name="action_delete">ลบ</string>
+    <string name="action_save">บันทึก</string>
+    <string name="action_cancel">ยกเลิก</string>
+    <string name="action_mark_viewed">ทำเครื่องหมายว่าดูแล้ว</string>
+    <string name="action_mark_planned">ยกเลิกการดูแล้ว</string>
+
     <string name="detail_not_found">ไม่พบรายการ</string>
     <string name="status_label">สถานะ: %1$s</string>
     <string name="status_planned">วางแผน</string>
     <string name="status_viewed">ดูแล้ว</string>
 
+    <string name="section_photos">รูปภาพ</string>
+    <string name="section_details">รายละเอียด</string>
+    <string name="add_photo">เพิ่มรูป</string>
+    <string name="delete_photo">ลบรูป</string>
+    <string name="sheet_add_photo_title">เพิ่มรูป</string>
+    <string name="action_camera">ถ่ายรูป</string>
+    <string name="action_gallery">เลือกจากแกลเลอรี</string>
+
+    <string name="delete_dorm_title">ลบหอนี้?</string>
+    <string name="delete_dorm_message">รูปและบันทึกจะถูกลบไปด้วย</string>
+    <string name="delete_photo_title">ลบรูปนี้?</string>
+    <string name="delete_photo_message">รูปจะถูกลบอย่างถาวร</string>
+
     <string name="add_title">เพิ่มหอ</string>
     <string name="edit_title">แก้ไขหอ</string>
-    <string name="action_save">บันทึก</string>
     <string name="field_name">ชื่อหอ / คอนโด</string>
     <string name="field_address">ที่อยู่</string>
     <string name="field_price">ราคา / เดือน</string>

@@ -54,19 +54,26 @@ class DormRepositoryImpl @Inject constructor(
     override fun observePhotos(dormId: Long): Flow<List<Photo>> =
         photoDao.observeByDorm(dormId).map { list -> list.map { it.toDomain() } }
 
-    override suspend fun addPhoto(dormId: Long, filePath: String, caption: String): Long =
-        photoDao.insert(
+    override suspend fun addPhoto(dormId: Long, filePath: String, caption: String): Long {
+        val nextOrder = photoDao.maxSortOrder(dormId) + 1
+        return photoDao.insert(
             PhotoEntity(
                 dormId = dormId,
                 filePath = filePath,
                 caption = caption,
                 takenAt = System.currentTimeMillis(),
+                sortOrder = nextOrder,
             )
         )
+    }
 
     override suspend fun deletePhoto(photoId: Long) {
         val photo = photoDao.getById(photoId) ?: return
         photoDao.delete(photo)
         photoFileStore.delete(photo.filePath)
+    }
+
+    override suspend fun reorderPhotos(orderedIds: List<Long>) {
+        photoDao.applyOrder(orderedIds)
     }
 }

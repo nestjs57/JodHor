@@ -26,6 +26,19 @@ class PhotoFileStore @Inject constructor(
     fun uriFor(file: File): Uri =
         FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
 
+    suspend fun copyFromUri(uri: Uri): String? = withContext(Dispatchers.IO) {
+        val file = createPhotoFile()
+        val stream = context.contentResolver.openInputStream(uri)
+        if (stream == null) {
+            file.delete()
+            return@withContext null
+        }
+        stream.use { input ->
+            file.outputStream().use(input::copyTo)
+        }
+        file.absolutePath
+    }
+
     suspend fun delete(path: String) = withContext(Dispatchers.IO) {
         runCatching { File(path).takeIf { it.exists() }?.delete() }
     }

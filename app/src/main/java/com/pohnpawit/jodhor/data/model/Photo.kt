@@ -6,4 +6,5 @@ data class Photo(
     val filePath: String,
     val caption: String = "",
     val takenAt: Long = System.currentTimeMillis(),
+    val sortOrder: Int = 0,
 )

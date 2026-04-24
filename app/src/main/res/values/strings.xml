@@ -12,17 +12,36 @@
     <string name="price_monthly">฿%1$d / month</string>
     <string name="action_toggle_viewed">Toggle viewed</string>
     <string name="action_favorite">Favorite</string>
+    <string name="action_unfavorite">Remove favorite</string>
 
     <string name="action_back">Back</string>
     <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_mark_viewed">Mark as viewed</string>
+    <string name="action_mark_planned">Mark as planned</string>
+
     <string name="detail_not_found">Item not found</string>
     <string name="status_label">Status: %1$s</string>
     <string name="status_planned">Planned</string>
     <string name="status_viewed">Viewed</string>
 
+    <string name="section_photos">Photos</string>
+    <string name="section_details">Details</string>
+    <string name="add_photo">Add photo</string>
+    <string name="delete_photo">Delete photo</string>
+    <string name="sheet_add_photo_title">Add photo</string>
+    <string name="action_camera">Camera</string>
+    <string name="action_gallery">Gallery</string>
+
+    <string name="delete_dorm_title">Delete this dorm?</string>
+    <string name="delete_dorm_message">Photos and notes will be removed.</string>
+    <string name="delete_photo_title">Delete this photo?</string>
+    <string name="delete_photo_message">The photo will be permanently removed.</string>
+
     <string name="add_title">Add dorm</string>
     <string name="edit_title">Edit dorm</string>
-    <string name="action_save">Save</string>
     <string name="field_name">Dorm / Condo name</string>
     <string name="field_address">Address</string>
     <string name="field_price">Price / month</string>

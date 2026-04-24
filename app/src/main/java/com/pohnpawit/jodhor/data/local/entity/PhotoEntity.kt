@@ -24,6 +24,7 @@ data class PhotoEntity(
     val filePath: String,
     val caption: String,
     val takenAt: Long,
+    val sortOrder: Int,
 )
 
 fun PhotoEntity.toDomain() = Photo(
@@ -32,6 +33,7 @@ fun PhotoEntity.toDomain() = Photo(
     filePath = filePath,
     caption = caption,
     takenAt = takenAt,
+    sortOrder = sortOrder,
 )
 
 fun Photo.toEntity() = PhotoEntity(
@@ -40,4 +42,5 @@ fun Photo.toEntity() = PhotoEntity(
     filePath = filePath,
     caption = caption,
     takenAt = takenAt,
+    sortOrder = sortOrder,
 )

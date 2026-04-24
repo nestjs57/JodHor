@@ -15,6 +15,7 @@ hiltNavigationCompose = "1.2.0"
 room = "2.6.1"
 kotlinxSerialization = "1.7.3"
 coil = "3.0.4"
+reorderable = "2.4.0"
 datastore = "1.1.1"
 coroutines = "1.9.0"
 
@@ -52,6 +53,8 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+
+reorderable = { group = "sh.calvin.reorderable", name = "reorderable", version.ref = "reorderable" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
