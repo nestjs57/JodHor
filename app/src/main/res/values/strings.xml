@@ -1,3 +1,35 @@
 <resources>
     <string name="app_name">Jod Hor</string>
+
+    <string name="list_empty">No items in this filter</string>
+    <string name="action_add_dorm">Add dorm</string>
+
+    <string name="filter_all">All</string>
+    <string name="filter_planned">Planned</string>
+    <string name="filter_viewed">Viewed</string>
+    <string name="filter_favorites">Favorites</string>
+
+    <string name="price_monthly">฿%1$d / month</string>
+    <string name="action_toggle_viewed">Toggle viewed</string>
+    <string name="action_favorite">Favorite</string>
+
+    <string name="action_back">Back</string>
+    <string name="action_edit">Edit</string>
+    <string name="detail_not_found">Item not found</string>
+    <string name="status_label">Status: %1$s</string>
+    <string name="status_planned">Planned</string>
+    <string name="status_viewed">Viewed</string>
+
+    <string name="add_title">Add dorm</string>
+    <string name="edit_title">Edit dorm</string>
+    <string name="action_save">Save</string>
+    <string name="field_name">Dorm / Condo name</string>
+    <string name="field_address">Address</string>
+    <string name="field_price">Price / month</string>
+    <string name="field_phone">Contact phone</string>
+    <string name="field_map_url">Google Map link</string>
+    <string name="field_notes">Notes</string>
+
+    <string name="photo_viewer_title">Photo</string>
+    <string name="photo_viewer_placeholder">TODO: photo viewer (dorm=%1$d photo=%2$d)</string>
 </resources>

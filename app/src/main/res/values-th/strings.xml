@@ -1,0 +1,33 @@
+<resources>
+    <string name="list_empty">ยังไม่มีรายการในตัวกรองนี้</string>
+    <string name="action_add_dorm">เพิ่มหอ</string>
+
+    <string name="filter_all">ทั้งหมด</string>
+    <string name="filter_planned">วางแผน</string>
+    <string name="filter_viewed">ดูแล้ว</string>
+    <string name="filter_favorites">รายการโปรด</string>
+
+    <string name="price_monthly">฿%1$d / เดือน</string>
+    <string name="action_toggle_viewed">สลับสถานะดูแล้ว</string>
+    <string name="action_favorite">รายการโปรด</string>
+
+    <string name="action_back">ย้อนกลับ</string>
+    <string name="action_edit">แก้ไข</string>
+    <string name="detail_not_found">ไม่พบรายการ</string>
+    <string name="status_label">สถานะ: %1$s</string>
+    <string name="status_planned">วางแผน</string>
+    <string name="status_viewed">ดูแล้ว</string>
+
+    <string name="add_title">เพิ่มหอ</string>
+    <string name="edit_title">แก้ไขหอ</string>
+    <string name="action_save">บันทึก</string>
+    <string name="field_name">ชื่อหอ / คอนโด</string>
+    <string name="field_address">ที่อยู่</string>
+    <string name="field_price">ราคา / เดือน</string>
+    <string name="field_phone">เบอร์ติดต่อ</string>
+    <string name="field_map_url">ลิงก์ Google Map</string>
+    <string name="field_notes">หมายเหตุ</string>
+
+    <string name="photo_viewer_title">รูป</string>
+    <string name="photo_viewer_placeholder">TODO: ดูรูป (หอ=%1$d รูป=%2$d)</string>
+</resources>
