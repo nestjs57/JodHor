@@ -6,6 +6,7 @@ import com.pohnpawit.jodhor.data.local.entity.PhotoEntity
 import com.pohnpawit.jodhor.data.local.entity.toDomain
 import com.pohnpawit.jodhor.data.local.entity.toEntity
 import com.pohnpawit.jodhor.data.model.Dorm
+import com.pohnpawit.jodhor.data.model.DormPreview
 import com.pohnpawit.jodhor.data.model.DormStatus
 import com.pohnpawit.jodhor.data.model.Photo
 import com.pohnpawit.jodhor.data.storage.PhotoFileStore
@@ -21,8 +22,8 @@ class DormRepositoryImpl @Inject constructor(
     private val photoFileStore: PhotoFileStore,
 ) : DormRepository {
 
-    override fun observeDorms(): Flow<List<Dorm>> =
-        dormDao.observeAll().map { list -> list.map { it.toDomain() } }
+    override fun observeDormPreviews(): Flow<List<DormPreview>> =
+        dormDao.observeAllWithPhotos().map { list -> list.map { it.toDomain() } }
 
     override fun observeDorm(id: Long): Flow<Dorm?> =
         dormDao.observeById(id).map { it?.toDomain() }

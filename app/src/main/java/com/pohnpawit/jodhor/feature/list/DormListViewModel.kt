@@ -21,14 +21,14 @@ class DormListViewModel @Inject constructor(
     private val filter = MutableStateFlow(DormListUiState.Filter.ALL)
 
     val uiState: StateFlow<DormListUiState> = combine(
-        repository.observeDorms(),
+        repository.observeDormPreviews(),
         filter,
-    ) { dorms, current ->
+    ) { previews, current ->
         val filtered = when (current) {
-            DormListUiState.Filter.ALL -> dorms
-            DormListUiState.Filter.PLANNED -> dorms.filter { it.status == DormStatus.PLANNED }
-            DormListUiState.Filter.VIEWED -> dorms.filter { it.status == DormStatus.VIEWED }
-            DormListUiState.Filter.FAVORITES -> dorms.filter { it.isFavorite }
+            DormListUiState.Filter.ALL -> previews
+            DormListUiState.Filter.PLANNED -> previews.filter { it.dorm.status == DormStatus.PLANNED }
+            DormListUiState.Filter.VIEWED -> previews.filter { it.dorm.status == DormStatus.VIEWED }
+            DormListUiState.Filter.FAVORITES -> previews.filter { it.dorm.isFavorite }
         }
         DormListUiState(isLoading = false, dorms = filtered, filter = current)
     }.stateIn(

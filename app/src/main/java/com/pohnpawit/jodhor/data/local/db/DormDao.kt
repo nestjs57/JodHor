@@ -5,14 +5,20 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.pohnpawit.jodhor.data.local.entity.DormEntity
+import com.pohnpawit.jodhor.data.local.entity.DormWithPhotos
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DormDao {
     @Query("SELECT * FROM dorms ORDER BY isFavorite DESC, createdAt DESC")
     fun observeAll(): Flow<List<DormEntity>>
+
+    @Transaction
+    @Query("SELECT * FROM dorms ORDER BY isFavorite DESC, createdAt DESC")
+    fun observeAllWithPhotos(): Flow<List<DormWithPhotos>>
 
     @Query("SELECT * FROM dorms WHERE id = :id")
     fun observeById(id: Long): Flow<DormEntity?>

@@ -65,12 +65,16 @@ fun DormListScreen(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    items(state.dorms, key = { it.id }) { dorm ->
+                    items(state.dorms, key = { it.dorm.id }) { preview ->
                         DormRow(
-                            dorm = dorm,
-                            onClick = { onOpenDorm(dorm.id) },
-                            onFavorite = { viewModel.toggleFavorite(dorm.id, !dorm.isFavorite) },
-                            onToggleStatus = { viewModel.toggleStatus(dorm.id, dorm.status) },
+                            preview = preview,
+                            onClick = { onOpenDorm(preview.dorm.id) },
+                            onFavorite = {
+                                viewModel.toggleFavorite(preview.dorm.id, !preview.dorm.isFavorite)
+                            },
+                            onToggleStatus = {
+                                viewModel.toggleStatus(preview.dorm.id, preview.dorm.status)
+                            },
                         )
                     }
                 }

@@ -48,5 +48,4 @@
     <string name="field_notes">หมายเหตุ</string>
 
     <string name="photo_viewer_title">รูป</string>
-    <string name="photo_viewer_placeholder">TODO: ดูรูป (หอ=%1$d รูป=%2$d)</string>
 </resources>

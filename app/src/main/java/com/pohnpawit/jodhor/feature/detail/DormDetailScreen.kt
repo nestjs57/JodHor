@@ -76,6 +76,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.pohnpawit.jodhor.R
+import com.pohnpawit.jodhor.core.designsystem.modifier.dashedBorder
 import com.pohnpawit.jodhor.data.model.Dorm
 import com.pohnpawit.jodhor.data.model.DormStatus
 import com.pohnpawit.jodhor.data.model.Photo
@@ -286,7 +287,10 @@ private fun AddPhotoTile(onClick: () -> Unit) {
         modifier = Modifier
             .aspectRatio(1f)
             .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .dashedBorder(
+                color = MaterialTheme.colorScheme.outline,
+                cornerRadius = 12.dp,
+            )
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {

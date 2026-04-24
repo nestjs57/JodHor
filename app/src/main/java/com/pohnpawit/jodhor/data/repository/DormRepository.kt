@@ -1,12 +1,13 @@
 package com.pohnpawit.jodhor.data.repository
 
 import com.pohnpawit.jodhor.data.model.Dorm
+import com.pohnpawit.jodhor.data.model.DormPreview
 import com.pohnpawit.jodhor.data.model.DormStatus
 import com.pohnpawit.jodhor.data.model.Photo
 import kotlinx.coroutines.flow.Flow
 
 interface DormRepository {
-    fun observeDorms(): Flow<List<Dorm>>
+    fun observeDormPreviews(): Flow<List<DormPreview>>
     fun observeDorm(id: Long): Flow<Dorm?>
     suspend fun getDorm(id: Long): Dorm?
     suspend fun upsertDorm(dorm: Dorm): Long
