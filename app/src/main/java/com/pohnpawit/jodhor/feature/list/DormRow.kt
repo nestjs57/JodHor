@@ -52,7 +52,7 @@ fun DormRow(
     val dorm = preview.dorm
     Card(onClick = onClick, modifier = modifier.fillMaxWidth()) {
         Column(
-            modifier = Modifier.padding(start = 12.dp, top = 12.dp, end = 4.dp, bottom = 12.dp),
+            modifier = Modifier.padding(start = 12.dp, top = 16.dp, end = 4.dp, bottom = 12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Row(
@@ -74,9 +74,6 @@ fun DormRow(
                             FullBadge()
                         }
                     }
-                    if (dorm.address.isNotBlank()) {
-                        Text(dorm.address, style = MaterialTheme.typography.bodySmall)
-                    }
                     dorm.priceMonthly?.let {
                         Text(
                             stringResource(R.string.price_monthly, it),
@@ -86,7 +83,7 @@ fun DormRow(
                 }
                 IconButton(
                     onClick = onToggleViewed,
-                    modifier = Modifier.offset(y = (-12).dp),
+                    modifier = Modifier.offset(y = (-6).dp),
                 ) {
                     val viewed = dorm.status == DormStatus.VIEWED
                     Icon(

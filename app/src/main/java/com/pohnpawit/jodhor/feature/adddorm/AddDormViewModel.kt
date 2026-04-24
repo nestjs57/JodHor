@@ -73,9 +73,10 @@ class AddDormViewModel @Inject constructor(
     fun onNotesChange(value: String) = _uiState.update { it.copy(notes = value) }
 
     fun onPhoneNumberChange(index: Int, value: String) = _uiState.update { current ->
+        val digits = value.filter(Char::isDigit)
         current.copy(
             phones = current.phones.mapIndexed { i, entry ->
-                if (i == index) entry.copy(number = value) else entry
+                if (i == index) entry.copy(number = digits) else entry
             },
         )
     }

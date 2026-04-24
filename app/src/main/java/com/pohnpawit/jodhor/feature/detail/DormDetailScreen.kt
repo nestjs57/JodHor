@@ -83,6 +83,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.pohnpawit.jodhor.R
 import com.pohnpawit.jodhor.core.designsystem.modifier.dashedBorder
+import com.pohnpawit.jodhor.core.util.formatThaiPhone
 import com.pohnpawit.jodhor.data.model.Dorm
 import com.pohnpawit.jodhor.data.model.DormStatus
 import com.pohnpawit.jodhor.data.model.PhoneContact
@@ -409,13 +410,14 @@ private fun DetailSection(dorm: Dorm, phones: List<PhoneContact>) {
             )
         }
         phones.forEach { phone ->
+            val raw = phone.number.filter(Char::isDigit)
             DetailRow(
                 leading = { Icon(Icons.Filled.Phone, null) },
                 title = phone.note.ifBlank { stringResource(R.string.field_phone_number) },
-                value = phone.number,
+                value = formatThaiPhone(phone.number),
                 onClick = {
                     context.startActivity(
-                        Intent(Intent.ACTION_DIAL, "tel:${phone.number}".toUri())
+                        Intent(Intent.ACTION_DIAL, "tel:$raw".toUri())
                     )
                 },
             )
