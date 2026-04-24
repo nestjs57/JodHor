@@ -9,7 +9,7 @@ import com.pohnpawit.jodhor.data.local.entity.PhotoEntity
 
 @Database(
     entities = [DormEntity::class, PhotoEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = true,
 )
 @TypeConverters(DormStatusConverter::class)

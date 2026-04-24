@@ -1,6 +1,7 @@
 package com.pohnpawit.jodhor.feature.detail
 
 import android.content.Intent
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -28,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
@@ -354,6 +356,12 @@ private fun DetailSection(dorm: Dorm) {
                 leading = { Icon(Icons.Filled.LocationOn, null) },
                 title = stringResource(R.string.field_address),
                 value = dorm.address,
+                onClick = if (dorm.mapUrl.isBlank()) {
+                    {
+                        val geo = "geo:0,0?q=${Uri.encode(dorm.address)}".toUri()
+                        context.startActivity(Intent(Intent.ACTION_VIEW, geo))
+                    }
+                } else null,
             )
         }
         dorm.priceMonthly?.let {
@@ -361,6 +369,27 @@ private fun DetailSection(dorm: Dorm) {
                 leading = { Icon(Icons.Filled.Payments, null) },
                 title = stringResource(R.string.field_price),
                 value = stringResource(R.string.price_monthly, it),
+            )
+        }
+        dorm.securityDeposit?.let {
+            DetailRow(
+                leading = { Icon(Icons.Filled.Payments, null) },
+                title = stringResource(R.string.field_deposit),
+                value = stringResource(R.string.amount_baht, it),
+            )
+        }
+        dorm.advancePayment?.let {
+            DetailRow(
+                leading = { Icon(Icons.Filled.Payments, null) },
+                title = stringResource(R.string.field_advance),
+                value = stringResource(R.string.amount_baht, it),
+            )
+        }
+        dorm.contractYears?.let {
+            DetailRow(
+                leading = { Icon(Icons.Filled.CalendarMonth, null) },
+                title = stringResource(R.string.field_contract_years),
+                value = stringResource(R.string.contract_years_value, it),
             )
         }
         if (dorm.contactPhone.isNotBlank()) {
@@ -376,10 +405,7 @@ private fun DetailSection(dorm: Dorm) {
             )
         }
         if (dorm.mapUrl.isNotBlank()) {
-            DetailRow(
-                leading = { Icon(Icons.Filled.Map, null) },
-                title = stringResource(R.string.field_map_url),
-                value = dorm.mapUrl,
+            MapLinkRow(
                 onClick = {
                     context.startActivity(Intent(Intent.ACTION_VIEW, dorm.mapUrl.toUri()))
                 },
@@ -392,6 +418,26 @@ private fun DetailSection(dorm: Dorm) {
                 value = dorm.notes,
             )
         }
+    }
+}
+
+@Composable
+private fun MapLinkRow(onClick: () -> Unit) {
+    Column {
+        ListItem(
+            leadingContent = {
+                Icon(Icons.Filled.Map, null, tint = MaterialTheme.colorScheme.primary)
+            },
+            headlineContent = {
+                Text(
+                    stringResource(R.string.action_open_in_maps),
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            },
+            modifier = Modifier.clickable(onClick = onClick),
+        )
+        HorizontalDivider()
     }
 }
 

@@ -7,7 +7,9 @@
     <string name="filter_viewed">ดูแล้ว</string>
     <string name="filter_favorites">รายการโปรด</string>
 
-    <string name="price_monthly">฿%1$d / เดือน</string>
+    <string name="price_monthly">฿%1$,d / เดือน</string>
+    <string name="amount_baht">฿%1$,d</string>
+    <string name="contract_years_value">%1$d ปี</string>
     <string name="action_toggle_viewed">สลับสถานะดูแล้ว</string>
     <string name="action_favorite">รายการโปรด</string>
     <string name="action_unfavorite">เอาออกจากรายการโปรด</string>
@@ -46,6 +48,10 @@
     <string name="field_phone">เบอร์ติดต่อ</string>
     <string name="field_map_url">ลิงก์ Google Map</string>
     <string name="field_notes">หมายเหตุ</string>
+    <string name="field_deposit">ค่าประกัน</string>
+    <string name="field_advance">แรกเข้า</string>
+    <string name="field_contract_years">สัญญา (ปี)</string>
+    <string name="action_open_in_maps">เปิดใน Google Maps</string>
 
     <string name="photo_viewer_title">รูป</string>
 </resources>

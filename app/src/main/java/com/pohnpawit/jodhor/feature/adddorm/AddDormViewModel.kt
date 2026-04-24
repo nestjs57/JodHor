@@ -44,6 +44,9 @@ class AddDormViewModel @Inject constructor(
                     name = dorm.name,
                     address = dorm.address,
                     priceMonthly = dorm.priceMonthly?.toString().orEmpty(),
+                    securityDeposit = dorm.securityDeposit?.toString().orEmpty(),
+                    advancePayment = dorm.advancePayment?.toString().orEmpty(),
+                    contractYears = dorm.contractYears?.toString().orEmpty(),
                     contactPhone = dorm.contactPhone,
                     mapUrl = dorm.mapUrl,
                     notes = dorm.notes,
@@ -56,6 +59,12 @@ class AddDormViewModel @Inject constructor(
     fun onAddressChange(value: String) = _uiState.update { it.copy(address = value) }
     fun onPriceChange(value: String) =
         _uiState.update { it.copy(priceMonthly = value.filter(Char::isDigit)) }
+    fun onDepositChange(value: String) =
+        _uiState.update { it.copy(securityDeposit = value.filter(Char::isDigit)) }
+    fun onAdvanceChange(value: String) =
+        _uiState.update { it.copy(advancePayment = value.filter(Char::isDigit)) }
+    fun onContractYearsChange(value: String) =
+        _uiState.update { it.copy(contractYears = value.filter(Char::isDigit)) }
     fun onPhoneChange(value: String) = _uiState.update { it.copy(contactPhone = value) }
     fun onMapUrlChange(value: String) = _uiState.update { it.copy(mapUrl = value) }
     fun onNotesChange(value: String) = _uiState.update { it.copy(notes = value) }
@@ -71,6 +80,9 @@ class AddDormViewModel @Inject constructor(
                     name = s.name.trim(),
                     address = s.address.trim(),
                     priceMonthly = s.priceMonthly.toIntOrNull(),
+                    securityDeposit = s.securityDeposit.toIntOrNull(),
+                    advancePayment = s.advancePayment.toIntOrNull(),
+                    contractYears = s.contractYears.toIntOrNull(),
                     contactPhone = s.contactPhone.trim(),
                     mapUrl = s.mapUrl.trim(),
                     notes = s.notes.trim(),
