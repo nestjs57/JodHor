@@ -1,6 +1,7 @@
 package com.pohnpawit.jodhor.data.repository
 
 import com.pohnpawit.jodhor.data.local.db.DormDao
+import com.pohnpawit.jodhor.data.local.db.PhoneContactDao
 import com.pohnpawit.jodhor.data.local.db.PhotoDao
 import com.pohnpawit.jodhor.data.local.entity.PhotoEntity
 import com.pohnpawit.jodhor.data.local.entity.toDomain
@@ -8,6 +9,7 @@ import com.pohnpawit.jodhor.data.local.entity.toEntity
 import com.pohnpawit.jodhor.data.model.Dorm
 import com.pohnpawit.jodhor.data.model.DormPreview
 import com.pohnpawit.jodhor.data.model.DormStatus
+import com.pohnpawit.jodhor.data.model.PhoneContact
 import com.pohnpawit.jodhor.data.model.Photo
 import com.pohnpawit.jodhor.data.storage.PhotoFileStore
 import kotlinx.coroutines.flow.Flow
@@ -19,6 +21,7 @@ import javax.inject.Singleton
 class DormRepositoryImpl @Inject constructor(
     private val dormDao: DormDao,
     private val photoDao: PhotoDao,
+    private val phoneContactDao: PhoneContactDao,
     private val photoFileStore: PhotoFileStore,
 ) : DormRepository {
 
@@ -45,6 +48,10 @@ class DormRepositoryImpl @Inject constructor(
 
     override suspend fun setFavorite(id: Long, isFavorite: Boolean) {
         dormDao.setFavorite(id, isFavorite)
+    }
+
+    override suspend fun setFull(id: Long, isFull: Boolean) {
+        dormDao.setFull(id, isFull)
     }
 
     override suspend fun setStatus(id: Long, status: DormStatus) {
@@ -76,5 +83,15 @@ class DormRepositoryImpl @Inject constructor(
 
     override suspend fun reorderPhotos(orderedIds: List<Long>) {
         photoDao.applyOrder(orderedIds)
+    }
+
+    override fun observePhones(dormId: Long): Flow<List<PhoneContact>> =
+        phoneContactDao.observeByDorm(dormId).map { list -> list.map { it.toDomain() } }
+
+    override suspend fun getPhones(dormId: Long): List<PhoneContact> =
+        phoneContactDao.getByDorm(dormId).map { it.toDomain() }
+
+    override suspend fun replaceDormPhones(dormId: Long, phones: List<PhoneContact>) {
+        phoneContactDao.replaceForDorm(dormId, phones.map { it.toEntity() })
     }
 }

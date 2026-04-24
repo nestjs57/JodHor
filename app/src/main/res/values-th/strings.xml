@@ -3,32 +3,35 @@
     <string name="action_add_dorm">เพิ่มหอ</string>
 
     <string name="filter_all">ทั้งหมด</string>
-    <string name="filter_planned">วางแผน</string>
+    <string name="filter_not_contacted">ยังไม่ติดต่อ</string>
+    <string name="filter_contacted">ติดต่อแล้ว</string>
     <string name="filter_viewed">ดูแล้ว</string>
     <string name="filter_favorites">รายการโปรด</string>
 
     <string name="price_monthly">฿%1$,d / เดือน</string>
     <string name="amount_baht">฿%1$,d</string>
     <string name="contract_years_value">%1$d ปี</string>
-    <string name="action_toggle_viewed">สลับสถานะดูแล้ว</string>
+    <string name="action_cycle_status">เปลี่ยนสถานะ</string>
     <string name="action_favorite">รายการโปรด</string>
     <string name="action_unfavorite">เอาออกจากรายการโปรด</string>
+    <string name="action_mark_full">ทำเครื่องหมายห้องเต็ม</string>
+    <string name="action_unmark_full">ยกเลิกห้องเต็ม</string>
+    <string name="badge_full">เต็ม</string>
 
     <string name="action_back">ย้อนกลับ</string>
     <string name="action_edit">แก้ไข</string>
     <string name="action_delete">ลบ</string>
     <string name="action_save">บันทึก</string>
     <string name="action_cancel">ยกเลิก</string>
-    <string name="action_mark_viewed">ทำเครื่องหมายว่าดูแล้ว</string>
-    <string name="action_mark_planned">ยกเลิกการดูแล้ว</string>
 
     <string name="detail_not_found">ไม่พบรายการ</string>
-    <string name="status_label">สถานะ: %1$s</string>
-    <string name="status_planned">วางแผน</string>
+    <string name="status_not_contacted">ยังไม่ติดต่อ</string>
+    <string name="status_contacted">ติดต่อแล้ว</string>
     <string name="status_viewed">ดูแล้ว</string>
 
     <string name="section_photos">รูปภาพ</string>
     <string name="section_details">รายละเอียด</string>
+    <string name="section_phones">เบอร์ติดต่อ</string>
     <string name="add_photo">เพิ่มรูป</string>
     <string name="delete_photo">ลบรูป</string>
     <string name="sheet_add_photo_title">เพิ่มรูป</string>
@@ -45,12 +48,15 @@
     <string name="field_name">ชื่อหอ / คอนโด</string>
     <string name="field_address">ที่อยู่</string>
     <string name="field_price">ราคา / เดือน</string>
-    <string name="field_phone">เบอร์ติดต่อ</string>
-    <string name="field_map_url">ลิงก์ Google Map</string>
-    <string name="field_notes">หมายเหตุ</string>
     <string name="field_deposit">ค่าประกัน</string>
     <string name="field_advance">แรกเข้า</string>
     <string name="field_contract_years">สัญญา (ปี)</string>
+    <string name="field_phone_number">เบอร์โทร</string>
+    <string name="field_phone_note">ป้ายกำกับ (เช่น เจ้าของ, นายหน้า)</string>
+    <string name="field_map_url">ลิงก์ Google Map</string>
+    <string name="field_notes">หมายเหตุ</string>
+    <string name="action_add_phone">เพิ่มเบอร์</string>
+    <string name="action_remove_phone">ลบเบอร์</string>
     <string name="action_open_in_maps">เปิดใน Google Maps</string>
 
     <string name="photo_viewer_title">รูป</string>

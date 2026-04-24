@@ -5,32 +5,35 @@
     <string name="action_add_dorm">Add dorm</string>
 
     <string name="filter_all">All</string>
-    <string name="filter_planned">Planned</string>
+    <string name="filter_not_contacted">Not contacted</string>
+    <string name="filter_contacted">Contacted</string>
     <string name="filter_viewed">Viewed</string>
     <string name="filter_favorites">Favorites</string>
 
     <string name="price_monthly">฿%1$,d / month</string>
     <string name="amount_baht">฿%1$,d</string>
     <string name="contract_years_value">%1$d year(s)</string>
-    <string name="action_toggle_viewed">Toggle viewed</string>
+    <string name="action_cycle_status">Change status</string>
     <string name="action_favorite">Favorite</string>
     <string name="action_unfavorite">Remove favorite</string>
+    <string name="action_mark_full">Mark as full</string>
+    <string name="action_unmark_full">Unmark full</string>
+    <string name="badge_full">Full</string>
 
     <string name="action_back">Back</string>
     <string name="action_edit">Edit</string>
     <string name="action_delete">Delete</string>
     <string name="action_save">Save</string>
     <string name="action_cancel">Cancel</string>
-    <string name="action_mark_viewed">Mark as viewed</string>
-    <string name="action_mark_planned">Mark as planned</string>
 
     <string name="detail_not_found">Item not found</string>
-    <string name="status_label">Status: %1$s</string>
-    <string name="status_planned">Planned</string>
+    <string name="status_not_contacted">Not contacted</string>
+    <string name="status_contacted">Contacted</string>
     <string name="status_viewed">Viewed</string>
 
     <string name="section_photos">Photos</string>
     <string name="section_details">Details</string>
+    <string name="section_phones">Phone contacts</string>
     <string name="add_photo">Add photo</string>
     <string name="delete_photo">Delete photo</string>
     <string name="sheet_add_photo_title">Add photo</string>
@@ -47,12 +50,15 @@
     <string name="field_name">Dorm / Condo name</string>
     <string name="field_address">Address</string>
     <string name="field_price">Price / month</string>
-    <string name="field_phone">Contact phone</string>
-    <string name="field_map_url">Google Map link</string>
-    <string name="field_notes">Notes</string>
     <string name="field_deposit">Security deposit</string>
     <string name="field_advance">Move-in fee</string>
     <string name="field_contract_years">Contract (years)</string>
+    <string name="field_phone_number">Phone number</string>
+    <string name="field_phone_note">Label (e.g., owner, agent)</string>
+    <string name="field_map_url">Google Map link</string>
+    <string name="field_notes">Notes</string>
+    <string name="action_add_phone">Add phone</string>
+    <string name="action_remove_phone">Remove phone</string>
     <string name="action_open_in_maps">Open in Google Maps</string>
 
     <string name="photo_viewer_title">Photo</string>

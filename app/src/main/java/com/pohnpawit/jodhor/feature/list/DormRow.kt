@@ -1,5 +1,6 @@
 package com.pohnpawit.jodhor.feature.list
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,7 +18,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,9 +30,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.pohnpawit.jodhor.R
@@ -47,7 +51,7 @@ fun DormRow(
     preview: DormPreview,
     onClick: () -> Unit,
     onFavorite: () -> Unit,
-    onToggleStatus: () -> Unit,
+    onCycleStatus: () -> Unit,
 ) {
     val dorm = preview.dorm
     Card(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
@@ -60,7 +64,20 @@ fun DormRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(dorm.name, style = MaterialTheme.typography.titleMedium)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = dorm.name,
+                            style = MaterialTheme.typography.titleMedium,
+                            textDecoration = if (dorm.isFull) TextDecoration.LineThrough else null,
+                            color = if (dorm.isFull) MaterialTheme.colorScheme.onSurfaceVariant
+                                    else MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.weight(1f, fill = false),
+                        )
+                        if (dorm.isFull) {
+                            Spacer(Modifier.size(6.dp))
+                            FullBadge()
+                        }
+                    }
                     if (dorm.address.isNotBlank()) {
                         Text(dorm.address, style = MaterialTheme.typography.bodySmall)
                     }
@@ -71,17 +88,19 @@ fun DormRow(
                         )
                     }
                 }
-                IconButton(onClick = onToggleStatus) {
-                    val viewed = dorm.status == DormStatus.VIEWED
+                IconButton(onClick = onCycleStatus) {
                     Icon(
-                        imageVector = if (viewed) Icons.Filled.CheckCircle else Icons.Outlined.CheckCircle,
-                        contentDescription = stringResource(R.string.action_toggle_viewed),
+                        imageVector = dorm.status.icon,
+                        contentDescription = stringResource(R.string.action_cycle_status),
+                        tint = dorm.status.tint(),
                     )
                 }
                 IconButton(onClick = onFavorite) {
                     Icon(
                         imageVector = if (dorm.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                        contentDescription = stringResource(R.string.action_favorite),
+                        contentDescription = stringResource(
+                            if (dorm.isFavorite) R.string.action_unfavorite else R.string.action_favorite
+                        ),
                     )
                 }
             }
@@ -90,6 +109,45 @@ fun DormRow(
         }
     }
 }
+
+@Composable
+private fun FullBadge() {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(4.dp))
+            .background(MaterialTheme.colorScheme.errorContainer)
+            .padding(horizontal = 6.dp, vertical = 2.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.badge_full),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onErrorContainer,
+            fontWeight = FontWeight.SemiBold,
+        )
+    }
+}
+
+private val DormStatus.icon: ImageVector
+    get() = when (this) {
+        DormStatus.NOT_CONTACTED -> Icons.Outlined.Circle
+        DormStatus.CONTACTED -> Icons.Filled.Phone
+        DormStatus.VIEWED -> Icons.Filled.CheckCircle
+    }
+
+@Composable
+private fun DormStatus.tint(): Color = when (this) {
+    DormStatus.NOT_CONTACTED -> MaterialTheme.colorScheme.outline
+    DormStatus.CONTACTED -> MaterialTheme.colorScheme.tertiary
+    DormStatus.VIEWED -> MaterialTheme.colorScheme.primary
+}
+
+@get:StringRes
+val DormStatus.labelRes: Int
+    get() = when (this) {
+        DormStatus.NOT_CONTACTED -> R.string.status_not_contacted
+        DormStatus.CONTACTED -> R.string.status_contacted
+        DormStatus.VIEWED -> R.string.status_viewed
+    }
 
 private sealed interface PreviewSlot {
     data class PhotoSlot(val photo: Photo) : PreviewSlot

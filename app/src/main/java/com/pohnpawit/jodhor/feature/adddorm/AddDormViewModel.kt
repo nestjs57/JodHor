@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.pohnpawit.jodhor.core.navigation.Route
 import com.pohnpawit.jodhor.data.model.Dorm
+import com.pohnpawit.jodhor.data.model.PhoneContact
 import com.pohnpawit.jodhor.data.repository.DormRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +28,7 @@ class AddDormViewModel @Inject constructor(
     val uiState: StateFlow<AddDormUiState> = _uiState.asStateFlow()
 
     init {
-        if (dormId != null) load(dormId)
+        if (dormId != null) load(dormId) else _uiState.update { it.copy(phones = listOf(PhoneEntryUi())) }
     }
 
     private fun load(id: Long) {
@@ -37,6 +38,9 @@ class AddDormViewModel @Inject constructor(
                 _uiState.update { it.copy(isLoading = false) }
                 return@launch
             }
+            val phones = repository.getPhones(id)
+                .map { PhoneEntryUi(number = it.number, note = it.note) }
+                .ifEmpty { listOf(PhoneEntryUi()) }
             _uiState.update {
                 it.copy(
                     isLoading = false,
@@ -47,7 +51,7 @@ class AddDormViewModel @Inject constructor(
                     securityDeposit = dorm.securityDeposit?.toString().orEmpty(),
                     advancePayment = dorm.advancePayment?.toString().orEmpty(),
                     contractYears = dorm.contractYears?.toString().orEmpty(),
-                    contactPhone = dorm.contactPhone,
+                    phones = phones,
                     mapUrl = dorm.mapUrl,
                     notes = dorm.notes,
                 )
@@ -65,16 +69,41 @@ class AddDormViewModel @Inject constructor(
         _uiState.update { it.copy(advancePayment = value.filter(Char::isDigit)) }
     fun onContractYearsChange(value: String) =
         _uiState.update { it.copy(contractYears = value.filter(Char::isDigit)) }
-    fun onPhoneChange(value: String) = _uiState.update { it.copy(contactPhone = value) }
     fun onMapUrlChange(value: String) = _uiState.update { it.copy(mapUrl = value) }
     fun onNotesChange(value: String) = _uiState.update { it.copy(notes = value) }
+
+    fun onPhoneNumberChange(index: Int, value: String) = _uiState.update { current ->
+        current.copy(
+            phones = current.phones.mapIndexed { i, entry ->
+                if (i == index) entry.copy(number = value) else entry
+            },
+        )
+    }
+
+    fun onPhoneNoteChange(index: Int, value: String) = _uiState.update { current ->
+        current.copy(
+            phones = current.phones.mapIndexed { i, entry ->
+                if (i == index) entry.copy(note = value) else entry
+            },
+        )
+    }
+
+    fun addPhoneEntry() = _uiState.update { it.copy(phones = it.phones + PhoneEntryUi()) }
+
+    fun removePhoneEntry(index: Int) = _uiState.update { current ->
+        current.copy(
+            phones = current.phones.toMutableList().apply { removeAt(index) }.ifEmpty {
+                listOf(PhoneEntryUi())
+            },
+        )
+    }
 
     fun save(onDone: () -> Unit) {
         val s = _uiState.value
         if (!s.canSave) return
         _uiState.update { it.copy(isSaving = true) }
         viewModelScope.launch {
-            repository.upsertDorm(
+            val id = repository.upsertDorm(
                 Dorm(
                     id = dormId ?: 0L,
                     name = s.name.trim(),
@@ -83,11 +112,17 @@ class AddDormViewModel @Inject constructor(
                     securityDeposit = s.securityDeposit.toIntOrNull(),
                     advancePayment = s.advancePayment.toIntOrNull(),
                     contractYears = s.contractYears.toIntOrNull(),
-                    contactPhone = s.contactPhone.trim(),
                     mapUrl = s.mapUrl.trim(),
                     notes = s.notes.trim(),
                 )
             )
+            val cleanPhones = s.phones
+                .mapNotNull { entry ->
+                    val number = entry.number.trim()
+                    if (number.isBlank()) null
+                    else PhoneContact(number = number, note = entry.note.trim())
+                }
+            repository.replaceDormPhones(id, cleanPhones)
             onDone()
         }
     }

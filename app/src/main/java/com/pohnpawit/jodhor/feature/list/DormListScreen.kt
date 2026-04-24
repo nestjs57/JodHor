@@ -72,8 +72,8 @@ fun DormListScreen(
                             onFavorite = {
                                 viewModel.toggleFavorite(preview.dorm.id, !preview.dorm.isFavorite)
                             },
-                            onToggleStatus = {
-                                viewModel.toggleStatus(preview.dorm.id, preview.dorm.status)
+                            onCycleStatus = {
+                                viewModel.cycleStatus(preview.dorm.id, preview.dorm.status)
                             },
                         )
                     }
@@ -109,7 +109,8 @@ private fun FilterRow(
 private val DormListUiState.Filter.labelRes: Int
     get() = when (this) {
         DormListUiState.Filter.ALL -> R.string.filter_all
-        DormListUiState.Filter.PLANNED -> R.string.filter_planned
+        DormListUiState.Filter.NOT_CONTACTED -> R.string.filter_not_contacted
+        DormListUiState.Filter.CONTACTED -> R.string.filter_contacted
         DormListUiState.Filter.VIEWED -> R.string.filter_viewed
         DormListUiState.Filter.FAVORITES -> R.string.filter_favorites
     }

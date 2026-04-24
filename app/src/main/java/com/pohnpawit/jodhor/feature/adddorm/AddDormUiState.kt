@@ -9,10 +9,15 @@ data class AddDormUiState(
     val securityDeposit: String = "",
     val advancePayment: String = "",
     val contractYears: String = "",
-    val contactPhone: String = "",
+    val phones: List<PhoneEntryUi> = emptyList(),
     val mapUrl: String = "",
     val notes: String = "",
     val isSaving: Boolean = false,
 ) {
     val canSave: Boolean get() = name.isNotBlank() && !isSaving
 }
+
+data class PhoneEntryUi(
+    val number: String = "",
+    val note: String = "",
+)

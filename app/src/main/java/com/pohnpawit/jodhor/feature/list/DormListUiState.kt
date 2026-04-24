@@ -7,5 +7,5 @@ data class DormListUiState(
     val dorms: List<DormPreview> = emptyList(),
     val filter: Filter = Filter.ALL,
 ) {
-    enum class Filter { ALL, PLANNED, VIEWED, FAVORITES }
+    enum class Filter { ALL, NOT_CONTACTED, CONTACTED, VIEWED, FAVORITES }
 }

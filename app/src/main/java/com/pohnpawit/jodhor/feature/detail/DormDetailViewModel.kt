@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.pohnpawit.jodhor.core.navigation.Route
-import com.pohnpawit.jodhor.data.model.DormStatus
+import com.pohnpawit.jodhor.data.model.next
 import com.pohnpawit.jodhor.data.repository.DormRepository
 import com.pohnpawit.jodhor.data.storage.PhotoFileStore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,8 +32,9 @@ class DormDetailViewModel @Inject constructor(
     val uiState: StateFlow<DormDetailUiState> = combine(
         repository.observeDorm(dormId),
         repository.observePhotos(dormId),
-    ) { dorm, photos ->
-        DormDetailUiState(isLoading = false, dorm = dorm, photos = photos)
+        repository.observePhones(dormId),
+    ) { dorm, photos, phones ->
+        DormDetailUiState(isLoading = false, dorm = dorm, photos = photos, phones = phones)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -45,10 +46,14 @@ class DormDetailViewModel @Inject constructor(
         viewModelScope.launch { repository.setFavorite(current.id, !current.isFavorite) }
     }
 
-    fun toggleStatus() {
+    fun toggleFull() {
         val current = uiState.value.dorm ?: return
-        val next = if (current.status == DormStatus.VIEWED) DormStatus.PLANNED else DormStatus.VIEWED
-        viewModelScope.launch { repository.setStatus(current.id, next) }
+        viewModelScope.launch { repository.setFull(current.id, !current.isFull) }
+    }
+
+    fun cycleStatus() {
+        val current = uiState.value.dorm ?: return
+        viewModelScope.launch { repository.setStatus(current.id, current.status.next()) }
     }
 
     fun prepareCameraCapture(): Uri {

@@ -2,6 +2,7 @@ package com.pohnpawit.jodhor.feature.adddorm
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -11,9 +12,12 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -21,6 +25,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -110,13 +115,15 @@ fun AddDormScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth(),
             )
-            OutlinedTextField(
-                value = state.contactPhone,
-                onValueChange = viewModel::onPhoneChange,
-                label = { Text(stringResource(R.string.field_phone)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                modifier = Modifier.fillMaxWidth(),
+
+            PhoneSection(
+                entries = state.phones,
+                onNumberChange = viewModel::onPhoneNumberChange,
+                onNoteChange = viewModel::onPhoneNoteChange,
+                onRemove = viewModel::removePhoneEntry,
+                onAdd = viewModel::addPhoneEntry,
             )
+
             OutlinedTextField(
                 value = state.mapUrl,
                 onValueChange = viewModel::onMapUrlChange,
@@ -132,5 +139,58 @@ fun AddDormScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
         }
+    }
+}
+
+@Composable
+private fun PhoneSection(
+    entries: List<PhoneEntryUi>,
+    onNumberChange: (Int, String) -> Unit,
+    onNoteChange: (Int, String) -> Unit,
+    onRemove: (Int) -> Unit,
+    onAdd: () -> Unit,
+) {
+    Text(
+        text = stringResource(R.string.section_phones),
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.primary,
+    )
+    entries.forEachIndexed { index, entry ->
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                OutlinedTextField(
+                    value = entry.number,
+                    onValueChange = { onNumberChange(index, it) },
+                    label = { Text(stringResource(R.string.field_phone_number)) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                OutlinedTextField(
+                    value = entry.note,
+                    onValueChange = { onNoteChange(index, it) },
+                    label = { Text(stringResource(R.string.field_phone_note)) },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            IconButton(onClick = { onRemove(index) }) {
+                Icon(
+                    Icons.Filled.Close,
+                    contentDescription = stringResource(R.string.action_remove_phone),
+                )
+            }
+        }
+    }
+    TextButton(onClick = onAdd) {
+        Icon(Icons.Filled.Add, contentDescription = null)
+        Text(
+            text = stringResource(R.string.action_add_phone),
+            modifier = Modifier.padding(start = 4.dp),
+        )
     }
 }

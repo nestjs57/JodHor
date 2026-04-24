@@ -8,11 +8,11 @@ data class Dorm(
     val securityDeposit: Int? = null,
     val advancePayment: Int? = null,
     val contractYears: Int? = null,
-    val contactPhone: String = "",
     val mapUrl: String = "",
     val notes: String = "",
-    val status: DormStatus = DormStatus.PLANNED,
+    val status: DormStatus = DormStatus.NOT_CONTACTED,
     val isFavorite: Boolean = false,
+    val isFull: Boolean = false,
     val createdAt: Long = System.currentTimeMillis(),
     val viewedAt: Long? = null,
 )

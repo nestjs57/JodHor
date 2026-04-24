@@ -29,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
@@ -42,9 +43,10 @@ import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PhotoLibrary
-import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -68,9 +70,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -81,6 +85,7 @@ import com.pohnpawit.jodhor.R
 import com.pohnpawit.jodhor.core.designsystem.modifier.dashedBorder
 import com.pohnpawit.jodhor.data.model.Dorm
 import com.pohnpawit.jodhor.data.model.DormStatus
+import com.pohnpawit.jodhor.data.model.PhoneContact
 import com.pohnpawit.jodhor.data.model.Photo
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyGridState
@@ -133,7 +138,14 @@ fun DormDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(dorm?.name ?: "", maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                title = {
+                    Text(
+                        text = dorm?.name ?: "",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        textDecoration = if (dorm?.isFull == true) TextDecoration.LineThrough else null,
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
@@ -144,6 +156,17 @@ fun DormDetailScreen(
                 },
                 actions = {
                     if (dorm != null) {
+                        IconButton(onClick = viewModel::toggleFull) {
+                            Icon(
+                                imageVector = Icons.Filled.Block,
+                                contentDescription = stringResource(
+                                    if (dorm.isFull) R.string.action_unmark_full
+                                    else R.string.action_mark_full
+                                ),
+                                tint = if (dorm.isFull) MaterialTheme.colorScheme.error
+                                       else MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
                         IconButton(onClick = viewModel::toggleFavorite) {
                             Icon(
                                 imageVector = if (dorm.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
@@ -185,7 +208,7 @@ fun DormDetailScreen(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             item(span = { GridItemSpan(maxLineSpan) }) {
-                StatusChip(dorm = dorm, onToggle = viewModel::toggleStatus)
+                StatusChip(status = dorm.status, onClick = viewModel::cycleStatus)
             }
             item(span = { GridItemSpan(maxLineSpan) }) {
                 SectionHeader(stringResource(R.string.section_photos))
@@ -209,7 +232,7 @@ fun DormDetailScreen(
                 SectionHeader(stringResource(R.string.section_details))
             }
             item(span = { GridItemSpan(maxLineSpan) }) {
-                DetailSection(dorm = dorm)
+                DetailSection(dorm = dorm, phones = state.phones)
             }
         }
     }
@@ -256,21 +279,14 @@ fun DormDetailScreen(
 }
 
 @Composable
-private fun StatusChip(dorm: Dorm, onToggle: () -> Unit) {
-    val viewed = dorm.status == DormStatus.VIEWED
+private fun StatusChip(status: DormStatus, onClick: () -> Unit) {
     AssistChip(
-        onClick = onToggle,
-        leadingIcon = {
-            Icon(
-                imageVector = if (viewed) Icons.Filled.CheckCircle else Icons.Outlined.CheckCircle,
-                contentDescription = null,
-            )
-        },
-        label = {
-            Text(
-                stringResource(if (viewed) R.string.action_mark_planned else R.string.action_mark_viewed)
-            )
-        },
+        onClick = onClick,
+        leadingIcon = { Icon(status.icon, contentDescription = null) },
+        label = { Text(stringResource(status.labelRes)) },
+        colors = AssistChipDefaults.assistChipColors(
+            leadingIconContentColor = status.tint(),
+        ),
     )
 }
 
@@ -348,7 +364,7 @@ private fun PhotoTile(
 }
 
 @Composable
-private fun DetailSection(dorm: Dorm) {
+private fun DetailSection(dorm: Dorm, phones: List<PhoneContact>) {
     val context = LocalContext.current
     Column {
         if (dorm.address.isNotBlank()) {
@@ -392,14 +408,14 @@ private fun DetailSection(dorm: Dorm) {
                 value = stringResource(R.string.contract_years_value, it),
             )
         }
-        if (dorm.contactPhone.isNotBlank()) {
+        phones.forEach { phone ->
             DetailRow(
                 leading = { Icon(Icons.Filled.Phone, null) },
-                title = stringResource(R.string.field_phone),
-                value = dorm.contactPhone,
+                title = phone.note.ifBlank { stringResource(R.string.field_phone_number) },
+                value = phone.number,
                 onClick = {
                     context.startActivity(
-                        Intent(Intent.ACTION_DIAL, "tel:${dorm.contactPhone}".toUri())
+                        Intent(Intent.ACTION_DIAL, "tel:${phone.number}".toUri())
                     )
                 },
             )
@@ -422,6 +438,24 @@ private fun DetailSection(dorm: Dorm) {
 }
 
 @Composable
+private fun DetailRow(
+    leading: @Composable () -> Unit,
+    title: String,
+    value: String,
+    onClick: (() -> Unit)? = null,
+) {
+    Column {
+        ListItem(
+            leadingContent = leading,
+            headlineContent = { Text(title, style = MaterialTheme.typography.labelMedium) },
+            supportingContent = { Text(value, style = MaterialTheme.typography.bodyLarge) },
+            modifier = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier,
+        )
+        HorizontalDivider()
+    }
+}
+
+@Composable
 private fun MapLinkRow(onClick: () -> Unit) {
     Column {
         ListItem(
@@ -436,24 +470,6 @@ private fun MapLinkRow(onClick: () -> Unit) {
                 )
             },
             modifier = Modifier.clickable(onClick = onClick),
-        )
-        HorizontalDivider()
-    }
-}
-
-@Composable
-private fun DetailRow(
-    leading: @Composable () -> Unit,
-    title: String,
-    value: String,
-    onClick: (() -> Unit)? = null,
-) {
-    Column {
-        ListItem(
-            leadingContent = leading,
-            headlineContent = { Text(title, style = MaterialTheme.typography.labelMedium) },
-            supportingContent = { Text(value, style = MaterialTheme.typography.bodyLarge) },
-            modifier = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier,
         )
         HorizontalDivider()
     }
@@ -511,3 +527,24 @@ private fun ConfirmDialog(
         },
     )
 }
+
+private val DormStatus.icon: ImageVector
+    get() = when (this) {
+        DormStatus.NOT_CONTACTED -> Icons.Outlined.Circle
+        DormStatus.CONTACTED -> Icons.Filled.Phone
+        DormStatus.VIEWED -> Icons.Filled.CheckCircle
+    }
+
+@Composable
+private fun DormStatus.tint(): Color = when (this) {
+    DormStatus.NOT_CONTACTED -> MaterialTheme.colorScheme.outline
+    DormStatus.CONTACTED -> MaterialTheme.colorScheme.tertiary
+    DormStatus.VIEWED -> MaterialTheme.colorScheme.primary
+}
+
+private val DormStatus.labelRes: Int
+    get() = when (this) {
+        DormStatus.NOT_CONTACTED -> R.string.status_not_contacted
+        DormStatus.CONTACTED -> R.string.status_contacted
+        DormStatus.VIEWED -> R.string.status_viewed
+    }
